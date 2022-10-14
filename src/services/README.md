@@ -1,0 +1,3 @@
+# Services
+
+Implement API calls/logic, auth services (Login/Reg), Profile services (create/edit user profile), etc...

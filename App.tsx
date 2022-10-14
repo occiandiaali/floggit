@@ -1,0 +1,77 @@
+import * as React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import HomeScreen from './src/screens/Home';
+import PostingScreen from './src/screens/Posting';
+import ProfileScreen from './src/screens/Profile';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
+const PostingStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator screenOptions={{headerShown: false}}>
+      <HomeStack.Screen name="brtr" component={HomeScreen} />
+    </HomeStack.Navigator>
+  );
+}
+function PostingStackScreen() {
+  return (
+    <PostingStack.Navigator screenOptions={{headerShown: false}}>
+      <PostingStack.Screen name="PostingScreen" component={PostingScreen} />
+    </PostingStack.Navigator>
+  );
+}
+function ProfileStackScreen() {
+  return (
+    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+    </ProfileStack.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({route}) => ({
+          tabBarIcon: ({focused, color, size}) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Camera') {
+              iconName = focused ? 'camera' : 'camera-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'teal',
+          tabBarInactiveTintColor: 'gray',
+          tabBarLabelStyle: {fontSize: 15, bottom: 2},
+        })}>
+        <Tab.Screen
+          options={{headerShown: false}}
+          name="Home"
+          component={HomeStackScreen}
+        />
+        <Tab.Screen
+          options={{headerShown: false}}
+          name="Camera"
+          component={PostingStackScreen}
+        />
+        <Tab.Screen
+          options={{headerShown: false}}
+          name="Profile"
+          component={ProfileStackScreen}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
