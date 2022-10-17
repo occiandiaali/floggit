@@ -54,7 +54,14 @@ export default function App() {
           },
           tabBarActiveTintColor: 'teal',
           tabBarInactiveTintColor: 'gray',
-          tabBarLabelStyle: {fontSize: 15, bottom: 2},
+          tabBarLabelStyle: {fontSize: 15, bottom: 8},
+          tabBarStyle: {
+            height: 70,
+            margin: 16,
+            borderRadius: 16,
+            bottom: 8,
+            backgroundColor: 'pink',
+          },
         })}>
         <Tab.Screen
           options={{headerShown: false}}
