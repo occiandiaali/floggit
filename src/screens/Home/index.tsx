@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
   promotedWrapper: {},
   wrapper: {
     flex: 1,
+    paddingTop: 16,
     backgroundColor: '#ffffff',
   },
 });

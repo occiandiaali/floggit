@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {StatusBar} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -38,10 +39,15 @@ function ProfileStackScreen() {
 export default function App() {
   return (
     <NavigationContainer>
+      <StatusBar
+        animated={true}
+        backgroundColor="transparent"
+        translucent={true}
+      />
       <Tab.Navigator
         screenOptions={({route}) => ({
           tabBarIcon: ({focused, color, size}) => {
-            let iconName;
+            let iconName = '';
 
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';

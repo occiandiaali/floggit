@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {
   Alert,
+  Button,
+  Image,
   PermissionsAndroid,
   Platform,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
@@ -25,8 +28,14 @@ const styles = StyleSheet.create({
   },
 });
 
+type ImagePickerResponse = {
+  uri?: string;
+  fileName?: string;
+};
+
 function PostingScreen() {
-  const [filePath, setFilePath] = useState({});
+  // const [filePath, setFilePath] = useState({});
+  const [imagePath, setImagePath] = useState('');
 
   const reqCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -98,7 +107,13 @@ function PostingScreen() {
         console.error('err', response.errorMessage);
         return;
       }
-      setFilePath(response);
+      response.assets?.map(m => {
+        console.log(`${m.uri}`);
+        setImagePath(m.uri);
+        // console.log(`${m.fileName}`);
+        // console.log(`${m.base64}`);
+      });
+      // setFilePath(response);
     });
 
     // if (isCameraPermitted && isStoragePermitted) {
@@ -140,11 +155,11 @@ function PostingScreen() {
     ]);
 
   const isFocused = useIsFocused();
-  isFocused ? createThreeButtonAlert() : null;
+  isFocused && imagePath === '' ? createThreeButtonAlert() : null;
 
   return (
     <View style={styles.container}>
-      <Ionicons
+      {/* <Ionicons
         name="camera"
         size={180}
         color="grey"
@@ -160,7 +175,63 @@ function PostingScreen() {
           alignItems: 'center',
         }}>
         <Text>Add Image</Text>
-      </Pressable>
+      </Pressable> */}
+      {imagePath !== '' ? (
+        <View style={{padding: 8}}>
+          <Image
+            source={{uri: imagePath}}
+            style={{width: '100%', height: 400}}
+          />
+          <TextInput
+            placeholder="Enter title.."
+            style={{
+              borderWidth: 1,
+              lineHeight: 8,
+              borderColor: 'grey',
+              marginTop: 12,
+            }}
+          />
+          <TextInput
+            numberOfLines={6}
+            placeholder="Description.."
+            style={{borderWidth: 1, borderColor: 'grey', marginTop: 8}}
+          />
+          <View
+            style={{
+              paddingTop: 16,
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+            }}>
+            <Ionicons
+              name="trash"
+              size={30}
+              color="red"
+              onPress={() => setImagePath('')}
+            />
+            <Button title="publish" />
+          </View>
+        </View>
+      ) : (
+        <>
+          <Ionicons
+            name="camera"
+            size={180}
+            color="grey"
+            style={{
+              marginTop: 34,
+              alignSelf: 'center',
+            }}
+          />
+          <Pressable
+            onPress={createThreeButtonAlert}
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text>Add Image</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }

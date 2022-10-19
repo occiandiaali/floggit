@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   userLabel: {
     paddingVertical: 16,
     fontSize: 15,
+    fontWeight: 'bold',
   },
 });
 
