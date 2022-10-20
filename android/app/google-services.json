@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "23348097528",
+    "project_id": "brtr-c8c43",
+    "storage_bucket": "brtr-c8c43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23348097528:android:80a296c95aff5b210be60d",
+        "android_client_info": {
+          "package_name": "com.brtr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "23348097528-gheleq3jjluuo1fmq85uogs4lie30tlq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgM9SMTfTL3gG_ujE3sx5c5VqN9PONrHc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "23348097528-gheleq3jjluuo1fmq85uogs4lie30tlq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,9 +3,11 @@ import {
   Alert,
   Button,
   Image,
+  KeyboardAvoidingView,
   PermissionsAndroid,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -15,6 +17,7 @@ import {useIsFocused} from '@react-navigation/native';
 
 import {
   CameraOptions,
+  ImageLibraryOptions,
   launchCamera,
   launchImageLibrary,
   MediaType,
@@ -115,26 +118,36 @@ function PostingScreen() {
       });
       // setFilePath(response);
     });
+  };
 
-    // if (isCameraPermitted && isStoragePermitted) {
-    //   launchCamera(options, response => {
-    //     console.log('Response ', response);
-    //     if (response.didCancel) {
-    //       Alert.alert('Notice', 'User cancelled camera');
-    //       return;
-    //     } else if (response.errorCode === 'camera_unavailable') {
-    //       Alert.alert('Warning', 'Camera not available');
-    //       return;
-    //     } else if (response.errorCode === 'permission') {
-    //       Alert.alert('Warning', 'Permission not satisfied');
-    //       return;
-    //     } else if (response.errorCode === 'others') {
-    //       console.error('err', response.errorMessage);
-    //       return;
-    //     }
-    //     setFilePath(response);
-    //   });
-    // }
+  const chooseFile = (type: MediaType) => {
+    let options = {
+      mediaType: type,
+      maxWidth: 300,
+      maxHeight: 550,
+      quality: 1,
+    } as ImageLibraryOptions;
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        Alert.alert('User cancelled image selector!');
+        return;
+      } else if (response.errorCode === 'camera_unavailable') {
+        Alert.alert('Camera not available..');
+        return;
+      } else if (response.errorCode === 'permission') {
+        Alert.alert('Permission not given');
+        return;
+      } else if (response.errorCode === 'others') {
+        Alert.alert(response.errorMessage);
+        return;
+      }
+      response.assets?.map(m => {
+        console.log(`${m.uri}`);
+        setImagePath(m.uri);
+        // console.log(`${m.fileName}`);
+        // console.log(`${m.base64}`);
+      });
+    });
   };
 
   const createThreeButtonAlert = () =>
@@ -150,7 +163,7 @@ function PostingScreen() {
       },
       {
         text: 'Choose from gallery',
-        onPress: () => console.log('Gallery pressed'),
+        onPress: () => chooseFile('photo'),
       },
     ]);
 
@@ -158,81 +171,70 @@ function PostingScreen() {
   isFocused && imagePath === '' ? createThreeButtonAlert() : null;
 
   return (
-    <View style={styles.container}>
-      {/* <Ionicons
-        name="camera"
-        size={180}
-        color="grey"
-        style={{
-          marginTop: 34,
-          alignSelf: 'center',
-        }}
-      />
-      <Pressable
-        onPress={createThreeButtonAlert}
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text>Add Image</Text>
-      </Pressable> */}
-      {imagePath !== '' ? (
-        <View style={{padding: 8}}>
-          <Image
-            source={{uri: imagePath}}
-            style={{width: '100%', height: 400}}
-          />
-          <TextInput
-            placeholder="Enter title.."
-            style={{
-              borderWidth: 1,
-              lineHeight: 8,
-              borderColor: 'grey',
-              marginTop: 12,
-            }}
-          />
-          <TextInput
-            numberOfLines={6}
-            placeholder="Description.."
-            style={{borderWidth: 1, borderColor: 'grey', marginTop: 8}}
-          />
-          <View
-            style={{
-              paddingTop: 16,
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-            }}>
-            <Ionicons
-              name="trash"
-              size={30}
-              color="red"
-              onPress={() => setImagePath('')}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'android' ? 'height' : 'padding'}
+      style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {imagePath !== '' ? (
+          <View style={{padding: 8}}>
+            <Image
+              source={{uri: imagePath}}
+              style={{width: '100%', height: 400}}
             />
-            <Button title="publish" />
+            <TextInput
+              placeholder="Enter title.."
+              style={{
+                borderWidth: 1,
+                lineHeight: 8,
+                borderColor: 'grey',
+                marginTop: 12,
+              }}
+            />
+            <TextInput
+              multiline={true}
+              numberOfLines={3}
+              textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
+              placeholder="Describe the item.."
+              style={{borderWidth: 1, borderColor: 'grey', marginTop: 8}}
+            />
+            <View
+              style={{
+                paddingTop: 16,
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+              }}>
+              <Ionicons
+                name="trash"
+                size={30}
+                color="red"
+                onPress={() => setImagePath('')}
+              />
+              <Button title="publish" />
+            </View>
           </View>
-        </View>
-      ) : (
-        <>
-          <Ionicons
-            name="camera"
-            size={180}
-            color="grey"
-            style={{
-              marginTop: 34,
-              alignSelf: 'center',
-            }}
-          />
-          <Pressable
-            onPress={createThreeButtonAlert}
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text>Add Image</Text>
-          </Pressable>
-        </>
-      )}
-    </View>
+        ) : (
+          <>
+            <Ionicons
+              name="camera"
+              size={180}
+              color="grey"
+              style={{
+                marginTop: 34,
+                alignSelf: 'center',
+              }}
+            />
+            <Pressable
+              onPress={createThreeButtonAlert}
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text>Add Image</Text>
+            </Pressable>
+          </>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

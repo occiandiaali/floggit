@@ -75,7 +75,7 @@ export default function App() {
           component={HomeStackScreen}
         />
         <Tab.Screen
-          options={{headerShown: false}}
+          options={{headerShown: false, tabBarHideOnKeyboard: true}}
           name="Camera"
           component={PostingStackScreen}
         />
