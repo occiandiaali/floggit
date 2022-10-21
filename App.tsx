@@ -8,6 +8,7 @@ import PostingScreen from './src/screens/Posting';
 import ProfileScreen from './src/screens/Profile';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import LoginScreen from './src/screens/Login';
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -37,6 +38,8 @@ function ProfileStackScreen() {
 }
 
 export default function App() {
+  const [authed, setAuthed] = React.useState(false);
+
   return (
     <NavigationContainer>
       <StatusBar
@@ -44,47 +47,51 @@ export default function App() {
         backgroundColor="transparent"
         translucent={true}
       />
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
-            let iconName = '';
+      {!authed ? (
+        <Tab.Navigator
+          screenOptions={({route}) => ({
+            tabBarIcon: ({focused, color, size}) => {
+              let iconName = '';
 
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Camera') {
-              iconName = focused ? 'camera' : 'camera-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'person' : 'person-outline';
-            }
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: 'teal',
-          tabBarInactiveTintColor: 'gray',
-          tabBarLabelStyle: {fontSize: 15, bottom: 8},
-          tabBarStyle: {
-            height: 70,
-            margin: 16,
-            borderRadius: 16,
-            bottom: 8,
-            backgroundColor: 'pink',
-          },
-        })}>
-        <Tab.Screen
-          options={{headerShown: false}}
-          name="Home"
-          component={HomeStackScreen}
-        />
-        <Tab.Screen
-          options={{headerShown: false, tabBarHideOnKeyboard: true}}
-          name="Camera"
-          component={PostingStackScreen}
-        />
-        <Tab.Screen
-          options={{headerShown: false}}
-          name="Profile"
-          component={ProfileStackScreen}
-        />
-      </Tab.Navigator>
+              if (route.name === 'Home') {
+                iconName = focused ? 'home' : 'home-outline';
+              } else if (route.name === 'Camera') {
+                iconName = focused ? 'camera' : 'camera-outline';
+              } else if (route.name === 'Profile') {
+                iconName = focused ? 'person' : 'person-outline';
+              }
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: 'teal',
+            tabBarInactiveTintColor: 'gray',
+            tabBarLabelStyle: {fontSize: 15, bottom: 8},
+            tabBarStyle: {
+              height: 70,
+              margin: 16,
+              borderRadius: 16,
+              bottom: 8,
+              backgroundColor: 'pink',
+            },
+          })}>
+          <Tab.Screen
+            options={{headerShown: false}}
+            name="Home"
+            component={HomeStackScreen}
+          />
+          <Tab.Screen
+            options={{headerShown: false, tabBarHideOnKeyboard: true}}
+            name="Camera"
+            component={PostingStackScreen}
+          />
+          <Tab.Screen
+            options={{headerShown: false}}
+            name="Profile"
+            component={ProfileStackScreen}
+          />
+        </Tab.Navigator>
+      ) : (
+        <LoginScreen />
+      )}
     </NavigationContainer>
   );
 }
