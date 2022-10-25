@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -6,7 +7,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
+import {AppContext} from '../../redux/contexts';
 
 const styles = StyleSheet.create({
   appName: {
@@ -20,20 +22,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emailFld: {
-    width: '80%',
-    height: 50,
-    padding: 8,
-    bottom: 6,
-    textAlign: 'center',
-    borderWidth: 0.8,
-    borderColor: 'grey',
-    borderRadius: 25,
-  },
   illustration: {
     width: 250,
     height: 250,
     bottom: 36,
+  },
+  inputFld: {
+    width: '80%',
+    height: 50,
+    padding: 8,
+    bottom: 6,
+    marginBottom: 8,
+    textAlign: 'center',
+    borderWidth: 0.8,
+    borderColor: 'grey',
+    borderRadius: 25,
   },
   loginTxt: {
     backgroundColor: 'pink',
@@ -65,7 +68,17 @@ const styles = StyleSheet.create({
 const LoginScreen = () => {
   const [loginDisabled, setLoginDisabled] = useState(true);
   const [text, setText] = useState('');
+  const [pass, setPass] = useState('');
   const isDisabled = loginDisabled || text.length < 1;
+  const {setAuthed} = useContext(AppContext);
+
+  const signIn = () => {
+    if (text.length > 5) {
+      setAuthed(true);
+    } else {
+      Alert.alert('Warning', 'Input should be more than 5 xters');
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.txt}>Welcome to</Text>
@@ -81,9 +94,20 @@ const LoginScreen = () => {
         }}
         onChangeText={newText => setText(newText)}
         placeholder="you@email.address"
-        style={styles.emailFld}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        style={styles.inputFld}
       />
-      <Text disabled={isDisabled} style={styles.loginTxt}>
+      <TextInput
+        onChange={() => {
+          setLoginDisabled(false);
+        }}
+        onChangeText={newPass => setPass(newPass)}
+        placeholder="password"
+        keyboardType="visible-password"
+        style={styles.inputFld}
+      />
+      <Text disabled={isDisabled} onPress={signIn} style={styles.loginTxt}>
         Sign In
       </Text>
       <View style={styles.register}>

@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const styles = StyleSheet.create({
@@ -46,18 +46,21 @@ const styles = StyleSheet.create({
 
 const EditProfileModal = ({onSave, onClose, onChangeText}) => {
   const [isBlank, setIsBlank] = useState(true);
+  let textRef = useRef();
+  const isDisabled = isBlank || textRef.current === '';
   return (
     <View style={styles.container}>
       <Ionicons onPress={onClose} name="close" size={32} style={styles.close} />
       <TextInput
-        //  value={userInput}
+        value={textRef.current}
+        ref={textRef.current}
         onChange={() => setIsBlank(false)}
         onChangeText={onChangeText}
         placeholder="Enter new value.."
         style={styles.input}
       />
       {/* <Button title="Save" onPress={() => !state} /> */}
-      <Text disabled={isBlank} onPress={onSave} style={styles.button}>
+      <Text disabled={isDisabled} onPress={onSave} style={styles.button}>
         Save
       </Text>
     </View>

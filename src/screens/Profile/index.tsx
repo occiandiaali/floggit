@@ -1,13 +1,6 @@
-import React, {useState} from 'react';
-import {
-  Alert,
-  Image,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {Alert, Image, Modal, StyleSheet, Text, View} from 'react-native';
+import {AppContext} from '../../redux/contexts';
 
 import EditProfileModal from '../../components/molecules/EditProfileModal';
 
@@ -67,9 +60,11 @@ function ProfileScreen() {
   const [userEmail, setUserEmail] = useState('fineboi@work.com');
   const [modalVisible, setModalVisible] = useState(false);
 
+  const {setAuthed} = useContext(AppContext);
+
   const checkTextInput = () => {
     if (!user.trim()) {
-      Alert.alert('Change NOT saved!', 'Fill in the field first!');
+      Alert.alert('Notice', 'We changed nothing, because you typed nothing!');
       return;
     }
   };
@@ -108,8 +103,10 @@ function ProfileScreen() {
         </View>
 
         <View style={[styles.bioLine, {paddingTop: 36}]}>
-          <Text style={styles.labels}>log out</Text>
-          <Ionicon name="log-out" size={24} />
+          <Text onPress={() => setAuthed(false)} style={styles.labels}>
+            log out
+          </Text>
+          <Ionicon onPress={() => setAuthed(false)} name="log-out" size={24} />
         </View>
       </View>
       <View style={styles.centredView}>
