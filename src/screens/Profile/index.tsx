@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Image, Modal, StyleSheet, Text, View} from 'react-native';
 import {AppContext} from '../../redux/contexts';
 
@@ -6,6 +6,8 @@ import EditProfileModal from '../../components/molecules/EditProfileModal';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   avatar: {
@@ -56,22 +58,46 @@ const styles = StyleSheet.create({
 });
 
 function ProfileScreen() {
+  const [text, setText] = useState('');
   const [user, setUser] = useState('');
-  const [userEmail, setUserEmail] = useState('fineboi@work.com');
+  // const [userEmail, setUserEmail] = useState('fineboi@work.com');
   const [modalVisible, setModalVisible] = useState(false);
 
   const {setAuthed} = useContext(AppContext);
 
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@email_Key');
+      if (value !== null) {
+        setUser(value);
+      }
+    } catch (error) {
+      console.log('Header====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
+
   const checkTextInput = () => {
-    if (!user.trim()) {
+    if (!text.trim()) {
       Alert.alert('Notice', 'We changed nothing, because you typed nothing!');
       return;
     }
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const logOut = () => {
+    setAuthed(false);
+    auth().signOut();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {user === 'god' ? (
+        {!user ? (
           <Image
             style={styles.avatar}
             source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
@@ -82,7 +108,8 @@ function ProfileScreen() {
           </View>
         )}
 
-        <Text style={styles.emailLabel}>{userEmail}</Text>
+        {/* <Text style={styles.emailLabel}>{userEmail}</Text> */}
+        <Text style={styles.emailLabel}>{user}</Text>
       </View>
       <View style={styles.userBio}>
         <View style={styles.bioLine}>
@@ -103,10 +130,10 @@ function ProfileScreen() {
         </View>
 
         <View style={[styles.bioLine, {paddingTop: 36}]}>
-          <Text onPress={() => setAuthed(false)} style={styles.labels}>
+          <Text onPress={logOut} style={styles.labels}>
             log out
           </Text>
-          <Ionicon onPress={() => setAuthed(false)} name="log-out" size={24} />
+          <Ionicon onPress={logOut} name="log-out" size={24} />
         </View>
       </View>
       <View style={styles.centredView}>
@@ -117,10 +144,10 @@ function ProfileScreen() {
           onRequestClose={() => setModalVisible(!modalVisible)}>
           <EditProfileModal
             onClose={() => setModalVisible(!modalVisible)}
-            onChangeText={u => setUser(u)}
+            onChangeText={u => setText(u)}
             onSave={() => {
               checkTextInput();
-              console.log('User ', user);
+              console.log('Text ', text);
               setModalVisible(!modalVisible);
             }}
           />

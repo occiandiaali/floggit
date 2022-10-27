@@ -1,7 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {AppContext} from '../../redux/contexts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   appName: {
@@ -39,15 +41,43 @@ const styles = StyleSheet.create({
 });
 
 const CustomHeaderComponent = () => {
-  const userName = 'fineboi@work.com';
+  // const userName = 'fineboi@work.com';
   const {setAuthed} = useContext(AppContext);
-  const signOut = () => setAuthed(false);
+
+  const signOut = () => {
+    setAuthed(false);
+    auth().signOut();
+  };
+  const [email, setEmail] = useState('');
+  const [user, setUser] = useState('');
+  // const getData = async () => {
+  //   try {
+  //     const value = await AsyncStorage.getItem('@email_Key');
+  //     if (value !== null) {
+  //       setEmail(value);
+  //     }
+  //   } catch (error) {
+  //     console.log('Header====================================');
+  //     console.log(error);
+  //     console.log('====================================');
+  //   }
+  // };
+
+  useEffect(() => {
+    // getData();
+    const subscriber = auth().onAuthStateChanged(user => {
+      console.log('User ', JSON.stringify(user?.displayName));
+      setEmail(user?.email);
+      setUser(user?.displayName);
+    });
+    return subscriber;
+  }, []);
 
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.appName}>brtr</Text>
       <View style={styles.endItems}>
-        <Text style={styles.userLabel}>{userName}</Text>
+        <Text style={styles.userLabel}>Hi, {user ? user : email}</Text>
         <Ionicons
           name="log-out"
           size={24}

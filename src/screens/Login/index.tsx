@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import React, {useContext, useState} from 'react';
 import {AppContext} from '../../redux/contexts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   appName: {
     fontSize: 48,
     fontWeight: 'bold',
-    bottom: 24,
+    bottom: 38,
   },
   container: {
     flex: 1,
@@ -65,24 +67,56 @@ const styles = StyleSheet.create({
   },
 });
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [loginDisabled, setLoginDisabled] = useState(true);
   const [text, setText] = useState('');
   const [pass, setPass] = useState('');
-  const isDisabled = loginDisabled || text.length < 1;
   const {setAuthed} = useContext(AppContext);
+  const [email, setEmail] = React.useState('');
+  const isDisabled = loginDisabled || email.length < 1;
+
+  const storeEmail = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('@email_Key', value);
+    } catch (error) {
+      console.log('====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
+
+  const handleSubmitPress = async () => {
+    if (!email) {
+      Alert.alert('Warning', 'Enter email');
+      return;
+    }
+    if (!pass || pass.length < 6) {
+      Alert.alert('Warning', 'Enter password greater than 5 xters');
+      return;
+    }
+    try {
+      await auth().signInWithEmailAndPassword(email, pass);
+      setAuthed(true);
+      storeEmail(email);
+    } catch (error) {
+      console.log('HandleSub====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
 
   const signIn = () => {
-    if (text.length > 5) {
+    if (pass.length > 5) {
       setAuthed(true);
+      storeEmail(email);
     } else {
-      Alert.alert('Warning', 'Input should be more than 5 xters');
+      Alert.alert('Warning', 'Secret must be more than 5 xters');
     }
   };
   return (
     <View style={styles.container}>
       <Text style={styles.txt}>Welcome to</Text>
-      <Text style={styles.appName}>brtr</Text>
+      <Text style={styles.appName}>qrnr</Text>
       <Image
         source={require('./../../assets/images/mobile_login.png')}
         accessibilityLabel="illustration of a person standing beside a mobile phone"
@@ -92,10 +126,11 @@ const LoginScreen = () => {
         onChange={() => {
           setLoginDisabled(false);
         }}
-        onChangeText={newText => setText(newText)}
+        onChangeText={newText => setEmail(newText)}
         placeholder="you@email.address"
         autoCapitalize="none"
         keyboardType="email-address"
+        autoCorrect={false}
         style={styles.inputFld}
       />
       <TextInput
@@ -104,15 +139,18 @@ const LoginScreen = () => {
         }}
         onChangeText={newPass => setPass(newPass)}
         placeholder="password"
-        keyboardType="visible-password"
+        secureTextEntry={true}
         style={styles.inputFld}
       />
-      <Text disabled={isDisabled} onPress={signIn} style={styles.loginTxt}>
+      <Text
+        disabled={isDisabled}
+        onPress={handleSubmitPress}
+        style={styles.loginTxt}>
         Sign In
       </Text>
       <View style={styles.register}>
         <Text style={styles.newuser}>New user?</Text>
-        <Pressable>
+        <Pressable onPress={() => navigation.navigate('signup')}>
           <Text style={styles.registerTxt}>Register</Text>
         </Pressable>
       </View>
