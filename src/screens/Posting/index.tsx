@@ -23,6 +23,7 @@ import {
   MediaType,
 } from 'react-native-image-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import CustomDropDown from '../../components/molecules/customDropDown';
 
 const styles = StyleSheet.create({
   container: {
@@ -179,15 +180,30 @@ function PostingScreen() {
           <View style={{padding: 8}}>
             <Image
               source={{uri: imagePath}}
-              style={{width: '100%', height: 400}}
+              style={{width: '100%', height: 350}}
             />
+            <CustomDropDown label="Select category" />
             <TextInput
-              placeholder="Enter title.."
+              placeholder="Item title"
+              textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
               style={{
                 borderWidth: 1,
                 lineHeight: 8,
                 borderColor: 'grey',
                 marginTop: 12,
+                paddingLeft: 12,
+              }}
+            />
+            <TextInput
+              placeholder="Asking price"
+              textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
+              keyboardType="number-pad"
+              style={{
+                borderWidth: 1,
+                lineHeight: 8,
+                borderColor: 'grey',
+                marginTop: 12,
+                paddingLeft: 12,
               }}
             />
             <TextInput
@@ -195,7 +211,12 @@ function PostingScreen() {
               numberOfLines={3}
               textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
               placeholder="Describe the item.."
-              style={{borderWidth: 1, borderColor: 'grey', marginTop: 8}}
+              style={{
+                borderWidth: 1,
+                borderColor: 'grey',
+                marginTop: 8,
+                paddingLeft: 12,
+              }}
             />
             <View
               style={{

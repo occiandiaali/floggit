@@ -117,6 +117,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from './src/screens/Home';
 import PostingScreen from './src/screens/Posting';
 import ProfileScreen from './src/screens/Profile';
+import UploadScreen from './src/screens/Profile/uploads';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LoginScreen from './src/screens/Login';
@@ -129,6 +130,7 @@ const HomeStack = createNativeStackNavigator();
 const PostingStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 function AuthStackScreen() {
   return (
@@ -157,7 +159,58 @@ function ProfileStackScreen() {
   return (
     <ProfileStack.Navigator screenOptions={{headerShown: false}}>
       <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <ProfileStack.Screen
+        options={{headerShown: true}}
+        name="Uploads"
+        component={UploadScreen}
+      />
     </ProfileStack.Navigator>
+  );
+}
+
+function HomeTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName = '';
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Camera') {
+            iconName = focused ? 'camera' : 'camera-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+          }
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: 'teal',
+        tabBarInactiveTintColor: 'gray',
+        tabBarLabelStyle: {fontSize: 15, bottom: 8},
+        tabBarStyle: {
+          height: 70,
+          margin: 8, //16,
+          borderRadius: 16,
+          bottom: 8,
+          backgroundColor: 'pink',
+        },
+      })}>
+      <Tab.Screen
+        options={{headerShown: false}}
+        name="Home"
+        component={HomeScreen}
+      />
+      <Tab.Screen
+        options={{headerShown: false}}
+        name="Camera"
+        component={PostingScreen}
+      />
+      <Tab.Screen
+        options={{headerShown: false}}
+        name="Profile"
+        component={ProfileScreen}
+      />
+    </Tab.Navigator>
   );
 }
 
@@ -171,6 +224,63 @@ export default function App() {
     [authed],
   );
 
+  // return (
+  //   <AppContext.Provider value={appContextValue}>
+  //     <NavigationContainer>
+  //       <StatusBar
+  //         animated={true}
+  //         backgroundColor="transparent"
+  //         translucent={true}
+  //       />
+  //       {authed ? (
+  //         <Tab.Navigator
+  //           screenOptions={({route}) => ({
+  //             tabBarIcon: ({focused, color, size}) => {
+  //               let iconName = '';
+
+  //               if (route.name === 'Home') {
+  //                 iconName = focused ? 'home' : 'home-outline';
+  //               } else if (route.name === 'Camera') {
+  //                 iconName = focused ? 'camera' : 'camera-outline';
+  //               } else if (route.name === 'Profile') {
+  //                 iconName = focused ? 'person' : 'person-outline';
+  //               }
+  //               return <Ionicons name={iconName} size={size} color={color} />;
+  //             },
+  //             tabBarActiveTintColor: 'teal',
+  //             tabBarInactiveTintColor: 'gray',
+  //             tabBarLabelStyle: {fontSize: 15, bottom: 8},
+  //             tabBarStyle: {
+  //               height: 70,
+  //               margin: 16,
+  //               borderRadius: 16,
+  //               bottom: 8,
+  //               backgroundColor: 'pink',
+  //             },
+  //           })}>
+  //           <Tab.Screen
+  //             options={{headerShown: false}}
+  //             name="Home"
+  //             component={HomeStackScreen}
+  //           />
+  //           <Tab.Screen
+  //             options={{headerShown: false, tabBarHideOnKeyboard: true}}
+  //             name="Camera"
+  //             component={PostingStackScreen}
+  //           />
+  //           <Tab.Screen
+  //             options={{headerShown: false}}
+  //             name="Profile"
+  //             component={ProfileStackScreen}
+  //           />
+  //         </Tab.Navigator>
+  //       ) : (
+  //         AuthStackScreen()
+  //       )}
+  //     </NavigationContainer>
+  //   </AppContext.Provider>
+  // );
+
   return (
     <AppContext.Provider value={appContextValue}>
       <NavigationContainer>
@@ -180,47 +290,14 @@ export default function App() {
           translucent={true}
         />
         {authed ? (
-          <Tab.Navigator
-            screenOptions={({route}) => ({
-              tabBarIcon: ({focused, color, size}) => {
-                let iconName = '';
-
-                if (route.name === 'Home') {
-                  iconName = focused ? 'home' : 'home-outline';
-                } else if (route.name === 'Camera') {
-                  iconName = focused ? 'camera' : 'camera-outline';
-                } else if (route.name === 'Profile') {
-                  iconName = focused ? 'person' : 'person-outline';
-                }
-                return <Ionicons name={iconName} size={size} color={color} />;
-              },
-              tabBarActiveTintColor: 'teal',
-              tabBarInactiveTintColor: 'gray',
-              tabBarLabelStyle: {fontSize: 15, bottom: 8},
-              tabBarStyle: {
-                height: 70,
-                margin: 16,
-                borderRadius: 16,
-                bottom: 8,
-                backgroundColor: 'pink',
-              },
-            })}>
-            <Tab.Screen
-              options={{headerShown: false}}
-              name="Home"
-              component={HomeStackScreen}
+          <Stack.Navigator screenOptions={{headerShown: false}}>
+            <Stack.Screen name="qrnr" component={HomeTabs} />
+            <Stack.Screen
+              options={{headerShown: true, title: 'History'}}
+              name="Uploads"
+              component={UploadScreen}
             />
-            <Tab.Screen
-              options={{headerShown: false, tabBarHideOnKeyboard: true}}
-              name="Camera"
-              component={PostingStackScreen}
-            />
-            <Tab.Screen
-              options={{headerShown: false}}
-              name="Profile"
-              component={ProfileStackScreen}
-            />
-          </Tab.Navigator>
+          </Stack.Navigator>
         ) : (
           AuthStackScreen()
         )}

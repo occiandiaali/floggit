@@ -75,7 +75,7 @@ const CustomHeaderComponent = () => {
 
   return (
     <View style={styles.headerContainer}>
-      <Text style={styles.appName}>brtr</Text>
+      <Text style={styles.appName}>qrnr</Text>
       <View style={styles.endItems}>
         <Text style={styles.userLabel}>Hi, {user ? user : email}</Text>
         <Ionicons
