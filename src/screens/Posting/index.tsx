@@ -11,10 +11,13 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   View,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-
+//import {v4 as uuidv4} from 'uuid';
+//import firebase from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
 import {
   CameraOptions,
   ImageLibraryOptions,
@@ -40,6 +43,12 @@ type ImagePickerResponse = {
 function PostingScreen() {
   // const [filePath, setFilePath] = useState({});
   const [imagePath, setImagePath] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [transferred, setTransferred] = useState(0);
+
+  const showToast = (msg: string) => {
+    ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.BOTTOM);
+  };
 
   const reqCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -171,6 +180,38 @@ function PostingScreen() {
   const isFocused = useIsFocused();
   isFocused && imagePath === '' ? createThreeButtonAlert() : null;
 
+  const uploadPost = async () => {
+    const filename = imagePath.substring(imagePath.lastIndexOf('-') + 1);
+    const uploadUri =
+      Platform.OS === 'ios' ? imagePath.replace('file://', '') : imagePath;
+    //const id = uuidv4();
+
+    setUploading(true);
+    setTransferred(0);
+
+    const task = storage().ref(`images/${filename}`).putFile(uploadUri);
+
+    task.on('state_changed', snapshot => {
+      setTransferred(
+        Math.round((snapshot.bytesTransferred * 100) / snapshot.totalBytes),
+      );
+    });
+
+    try {
+      await task;
+    } catch (error) {
+      console.log('Task err====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+    setUploading(false);
+    Platform.OS === 'android'
+      ? showToast('Image has been uploaded!')
+      : Alert.alert('Success!', 'Image has been uploaded!');
+    // Alert.alert('Success!', 'Image has been uploaded!');
+    setImagePath('');
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'android' ? 'height' : 'padding'}
@@ -230,7 +271,15 @@ function PostingScreen() {
                 color="red"
                 onPress={() => setImagePath('')}
               />
-              <Button title="publish" />
+              {uploading ? (
+                <View style={styles.progress}>
+                  <Text style={{fontSize: 25, fontWeight: 'bold'}}>
+                    {transferred}%
+                  </Text>
+                </View>
+              ) : (
+                <Button onPress={uploadPost} title="publish" />
+              )}
             </View>
           </View>
         ) : (

@@ -1,8 +1,32 @@
-import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import CustomHeaderComponent from '../../components/molecules/customHeader';
 
+import storage from '@react-native-firebase/storage';
+
 const styles = StyleSheet.create({
+  item: {
+    margin: 8,
+    width: 320,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderColor: 'pink',
+    borderWidth: 1.5,
+  },
+  pic: {
+    margin: 8,
+    width: 320,
+    height: 200,
+  },
   promotedWrapper: {},
   levels: {
     paddingBottom: 8,
@@ -60,6 +84,27 @@ const promos = [
 ];
 
 function HomeScreen() {
+  const [samples, setSamples] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const getSamples = async () => {
+    setLoading(true);
+    const imageRefs = await storage().ref('images').listAll();
+    const urls = await Promise.all(
+      imageRefs.items.map(ref => ref.getDownloadURL()),
+    );
+    console.log('urls refs ', urls);
+    setSamples(urls);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    try {
+      getSamples();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <View style={styles.wrapper}>
       <CustomHeaderComponent />
@@ -88,7 +133,7 @@ function HomeScreen() {
         <View style={styles.levels}>
           <Text style={styles.level1Label}>Level One</Text>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-            {promos.map(el => (
+            {/* {promos.map(el => (
               <View
                 key={el.id}
                 style={{
@@ -104,7 +149,37 @@ function HomeScreen() {
                 }}>
                 <Text>{el.label}</Text>
               </View>
-            ))}
+            ))} */}
+            {samples.length !== 0
+              ? samples.map((u, i) => (
+                  <View style={styles.item} key={i}>
+                    {loading ? (
+                      <ActivityIndicator
+                        size={'large'}
+                        style={{alignSelf: 'center'}}
+                      />
+                    ) : (
+                      <Image source={{uri: u}} style={styles.pic} />
+                    )}
+                  </View>
+                ))
+              : promos.map(el => (
+                  <View
+                    key={el.id}
+                    style={{
+                      margin: 8,
+                      width: 320,
+                      height: 200,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 12,
+                      borderColor: 'pink',
+                      borderWidth: 1.5,
+                      // backgroundColor: 'teal',
+                    }}>
+                    <Text>{el.label}</Text>
+                  </View>
+                ))}
           </ScrollView>
         </View>
         <View style={styles.levels}>

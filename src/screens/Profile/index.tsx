@@ -36,10 +36,10 @@ const styles = StyleSheet.create({
   bioLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottomWidth: 0.9,
+    borderBottomWidth: 0.5,
     borderBottomColor: 'grey',
-    paddingBottom: 6,
-    paddingTop: 4,
+    paddingBottom: 8, //6,
+    paddingTop: 8, //4,
   },
   container: {
     flex: 1,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     top: '20%',
   },
   labels: {
-    fontSize: 24,
+    fontSize: 21,
   },
   centredView: {
     width: '100%',
@@ -180,10 +180,15 @@ function ProfileScreen({navigation}) {
     }
   };
 
-  const checkTextInput = () => {
+  const checkTextInput = value => {
     if (!text.trim()) {
       Alert.alert('Notice', 'We changed nothing, because you typed nothing!');
       return;
+    } else {
+      setUser(value);
+      auth().currentUser?.updateProfile({
+        displayName: user,
+      });
     }
   };
 
@@ -240,23 +245,23 @@ function ProfileScreen({navigation}) {
       </View>
       <View style={styles.userBio}>
         <View style={styles.bioLine}>
-          <Text style={styles.labels}>full name</Text>
+          <Text style={styles.labels}>{user}</Text>
           <Ionicon
             name="create"
             size={24}
             onPress={() => setModalVisible(!modalVisible)}
           />
         </View>
-        <View style={styles.bioLine}>
-          <Text style={styles.labels}>{user} (username)</Text>
+        {/* <View style={styles.bioLine}>
+          <Text style={styles.labels}>{user}</Text>
           <Ionicon
             name="create"
             size={24}
             onPress={() => setModalVisible(!modalVisible)}
           />
-        </View>
+        </View> */}
         <View style={styles.bioLine}>
-          <Text style={styles.labels}>uploads</Text>
+          <Text style={styles.labels}>my uploads</Text>
           <Ionicon
             name="images"
             size={24}
@@ -281,7 +286,7 @@ function ProfileScreen({navigation}) {
             onClose={() => setModalVisible(!modalVisible)}
             onChangeText={u => setText(u)}
             onSave={() => {
-              checkTextInput();
+              checkTextInput(text);
               console.log('Text ', text);
               setModalVisible(!modalVisible);
             }}

@@ -124,11 +124,14 @@ import LoginScreen from './src/screens/Login';
 import SignUpScreen from './src/screens/Register';
 
 import {AppContext} from './src/redux/contexts';
+//import Firebase, {FirebaseProvider} from './src/utils';
+import {Provider} from 'react-redux';
+import {store} from './src/redux/store';
 
 const Tab = createBottomTabNavigator();
-const HomeStack = createNativeStackNavigator();
-const PostingStack = createNativeStackNavigator();
-const ProfileStack = createNativeStackNavigator();
+// const HomeStack = createNativeStackNavigator();
+// const PostingStack = createNativeStackNavigator();
+// const ProfileStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -141,32 +144,32 @@ function AuthStackScreen() {
   );
 }
 
-function HomeStackScreen() {
-  return (
-    <HomeStack.Navigator screenOptions={{headerShown: false}}>
-      <HomeStack.Screen name="brtr" component={HomeScreen} />
-    </HomeStack.Navigator>
-  );
-}
-function PostingStackScreen() {
-  return (
-    <PostingStack.Navigator screenOptions={{headerShown: false}}>
-      <PostingStack.Screen name="PostingScreen" component={PostingScreen} />
-    </PostingStack.Navigator>
-  );
-}
-function ProfileStackScreen() {
-  return (
-    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
-      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <ProfileStack.Screen
-        options={{headerShown: true}}
-        name="Uploads"
-        component={UploadScreen}
-      />
-    </ProfileStack.Navigator>
-  );
-}
+// function HomeStackScreen() {
+//   return (
+//     <HomeStack.Navigator screenOptions={{headerShown: false}}>
+//       <HomeStack.Screen name="brtr" component={HomeScreen} />
+//     </HomeStack.Navigator>
+//   );
+// }
+// function PostingStackScreen() {
+//   return (
+//     <PostingStack.Navigator screenOptions={{headerShown: false}}>
+//       <PostingStack.Screen name="PostingScreen" component={PostingScreen} />
+//     </PostingStack.Navigator>
+//   );
+// }
+// function ProfileStackScreen() {
+//   return (
+//     <ProfileStack.Navigator screenOptions={{headerShown: false}}>
+//       <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+//       <ProfileStack.Screen
+//         options={{headerShown: true}}
+//         name="Uploads"
+//         component={UploadScreen}
+//       />
+//     </ProfileStack.Navigator>
+//   );
+// }
 
 function HomeTabs() {
   return (

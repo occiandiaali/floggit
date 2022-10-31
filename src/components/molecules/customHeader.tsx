@@ -77,7 +77,7 @@ const CustomHeaderComponent = () => {
     <View style={styles.headerContainer}>
       <Text style={styles.appName}>qrnr</Text>
       <View style={styles.endItems}>
-        <Text style={styles.userLabel}>Hi, {user ? user : email}</Text>
+        <Text style={styles.userLabel}>{email}</Text>
         <Ionicons
           name="log-out"
           size={24}
