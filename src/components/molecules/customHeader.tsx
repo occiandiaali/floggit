@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {AppContext} from '../../redux/contexts';
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
 const CustomHeaderComponent = () => {
   // const userName = 'fineboi@work.com';
   const {setAuthed} = useContext(AppContext);
+  const [img, setImg] = useState('');
 
   const signOut = () => {
     setAuthed(false);
@@ -73,11 +74,38 @@ const CustomHeaderComponent = () => {
     return subscriber;
   }, []);
 
+  const getAvatar = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@avatar_Key');
+      if (value !== '') {
+        setImg(value);
+      }
+    } catch (error) {
+      console.log('Avatar get err====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
+
+  useEffect(() => {
+    getAvatar();
+  }, []);
+
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.appName}>qrnr</Text>
       <View style={styles.endItems}>
         <Text style={styles.userLabel}>{email}</Text>
+        <Image
+          source={{uri: img}}
+          style={{
+            marginRight: 12,
+            bottom: 6,
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+          }}
+        />
         <Ionicons
           name="log-out"
           size={24}

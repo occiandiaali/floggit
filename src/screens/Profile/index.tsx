@@ -82,6 +82,16 @@ function ProfileScreen({navigation}) {
 
   const {setAuthed} = useContext(AppContext);
 
+  const storeAvatar = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('@avatar_Key', value);
+    } catch (error) {
+      console.log('Store avatar====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
+
   const captureImage = async (type: MediaType) => {
     let options = {
       mediaType: type,
@@ -144,6 +154,7 @@ function ProfileScreen({navigation}) {
       response.assets?.map(m => {
         console.log(`${m.uri}`);
         setImagePath(m.uri);
+        storeAvatar(m?.uri);
         // console.log(`${m.fileName}`);
         // console.log(`${m.base64}`);
       });
@@ -179,6 +190,18 @@ function ProfileScreen({navigation}) {
       console.log('====================================');
     }
   };
+  const getAvatar = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@avatar_Key');
+      if (value !== '') {
+        setImagePath(value);
+      }
+    } catch (error) {
+      console.log('Avatar get err====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
 
   const checkTextInput = value => {
     if (!text.trim()) {
@@ -205,6 +228,10 @@ function ProfileScreen({navigation}) {
     return subscriber;
   }, []);
 
+  useEffect(() => {
+    getAvatar();
+  }, []);
+
   const logOut = () => {
     setAuthed(false);
     auth().signOut();
@@ -224,7 +251,7 @@ function ProfileScreen({navigation}) {
           </View>
         )} */}
         <View style={styles.avatar}>
-          {imagePath === '' ? (
+          {!imagePath ? (
             <Icon
               name="person-add"
               size={45}

@@ -85,21 +85,37 @@ const promos = [
 
 function HomeScreen() {
   const [samples, setSamples] = useState<string[]>([]);
+  const [samples2, setSamples2] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
+
   const getSamples = async () => {
     setLoading(true);
     const imageRefs = await storage().ref('images').listAll();
+    // const imageRefs = await storage().ref('images').list({maxResults: 3});
     const urls = await Promise.all(
       imageRefs.items.map(ref => ref.getDownloadURL()),
     );
-    console.log('urls refs ', urls);
+    // console.log('urls refs ', urls);
     setSamples(urls);
     setLoading(false);
+  };
+
+  const getLevelTwos = async () => {
+    setLoading2(true);
+    const levelTwos = await storage().ref('images/leveltwos').list();
+    const urls = await Promise.all(
+      levelTwos.items.map(ref => ref.getDownloadURL()),
+    );
+    console.log('level twos refs ', urls);
+    setSamples2(urls);
+    setLoading2(false);
   };
 
   useEffect(() => {
     try {
       getSamples();
+      getLevelTwos();
     } catch (error) {
       console.log(error);
     }
@@ -182,7 +198,7 @@ function HomeScreen() {
                 ))}
           </ScrollView>
         </View>
-        <View style={styles.levels}>
+        {/* <View style={styles.levels}>
           <Text style={styles.level2Label}>Level Two</Text>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
             {promos.map(el => (
@@ -201,6 +217,58 @@ function HomeScreen() {
                 <Text>{el.label}</Text>
               </View>
             ))}
+          </ScrollView>
+        </View> */}
+        <View style={styles.levels}>
+          <Text style={styles.level1Label}>Level Two</Text>
+          <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
+            {/* {promos.map(el => (
+              <View
+                key={el.id}
+                style={{
+                  margin: 8,
+                  width: 320,
+                  height: 200,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 12,
+                  borderColor: 'pink',
+                  borderWidth: 1.5,
+                  // backgroundColor: 'teal',
+                }}>
+                <Text>{el.label}</Text>
+              </View>
+            ))} */}
+            {samples2.length !== 0
+              ? samples2.map((u, i) => (
+                  <View style={styles.item} key={i}>
+                    {loading2 ? (
+                      <ActivityIndicator
+                        size={'large'}
+                        style={{alignSelf: 'center'}}
+                      />
+                    ) : (
+                      <Image source={{uri: u}} style={styles.pic} />
+                    )}
+                  </View>
+                ))
+              : promos.map(el => (
+                  <View
+                    key={el.id}
+                    style={{
+                      margin: 8,
+                      width: 320,
+                      height: 200,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 12,
+                      borderColor: 'pink',
+                      borderWidth: 1.5,
+                      // backgroundColor: 'teal',
+                    }}>
+                    <Text>{el.label}</Text>
+                  </View>
+                ))}
           </ScrollView>
         </View>
         <View style={styles.levels}>
