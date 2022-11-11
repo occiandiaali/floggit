@@ -116,7 +116,7 @@ const LoginScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.txt}>Welcome to</Text>
-      <Text style={styles.appName}>qrnr</Text>
+      <Text style={styles.appName}>floggit</Text>
       <Image
         source={require('./../../assets/images/mobile_login.png')}
         accessibilityLabel="illustration of a person standing beside a mobile phone"

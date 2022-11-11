@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {
   Alert,
-  Button,
   Image,
   KeyboardAvoidingView,
   PermissionsAndroid,
@@ -34,6 +33,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  flogBtn: {
+    width: 100,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: 'pink',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -280,26 +287,30 @@ function PostingScreen() {
   const cUser = auth().currentUser;
 
   const submitPost = async () => {
-    const imgUrl = await uploadPost();
-    firestore()
-      .collection('Posts')
-      .add({
-        userid: cUser?.uid,
-        category: postCategory,
-        title: postTitle,
-        price: postPrice,
-        description: postDesc,
-        created: firestore.Timestamp.fromDate(new Date()),
-        imageurl: imgUrl,
-      })
-      .then(() => {
-        setPostCategory('');
-        setPostTitle('');
-        setPostPrice('');
-        setPostDesc('');
-        showToast('Post submitted..');
-      })
-      .catch(e => console.log('Submit err ', e));
+    if (postTitle && postPrice && postCategory && postDesc) {
+      const imgUrl = await uploadPost();
+      firestore()
+        .collection('Posts')
+        .add({
+          userid: cUser?.uid,
+          category: postCategory,
+          title: postTitle,
+          price: postPrice,
+          description: postDesc,
+          created: firestore.Timestamp.fromDate(new Date()),
+          imageurl: imgUrl,
+        })
+        .then(() => {
+          setPostCategory('');
+          setPostTitle('');
+          setPostPrice('');
+          setPostDesc('');
+          showToast('Post submitted..');
+        })
+        .catch(e => console.log('Submit err ', e));
+    } else {
+      showToast('Fill out ALL fields!');
+    }
   };
 
   return (
@@ -374,7 +385,16 @@ function PostingScreen() {
                   </Text>
                 </View>
               ) : (
-                <Button onPress={submitPost} title="publish" />
+                <Pressable onPress={submitPost} style={styles.flogBtn}>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                    }}>
+                    floggit
+                  </Text>
+                </Pressable>
               )}
             </View>
           </View>

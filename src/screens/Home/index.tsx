@@ -16,6 +16,17 @@ import CustomHeaderComponent from '../../components/molecules/customHeader';
 import storage from '@react-native-firebase/storage';
 
 const styles = StyleSheet.create({
+  carouselBoxLabel: {
+    width: 100,
+    height: 30,
+    backgroundColor: 'white',
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    position: 'absolute',
+    bottom: 20,
+  },
   item: {
     margin: 8,
     width: 320,
@@ -197,7 +208,7 @@ function HomeScreen({navigation}) {
                 borderRadius: 12,
                 backgroundColor: 'teal',
               }}>
-              <Text>{el.label}</Text>
+              <Text style={styles.carouselBoxLabel}>{el.label}</Text>
             </View>
           ))}
         </ScrollView>
@@ -230,7 +241,10 @@ function HomeScreen({navigation}) {
                   <Pressable
                     style={styles.item}
                     key={i}
-                    onPress={() => console.log('Pressed ', u)}>
+                    onPress={() => {
+                      console.log('Pressed ', u);
+                      navigation.navigate('PostDetails');
+                    }}>
                     {/* <View style={styles.item} key={i}> */}
                     {loading ? (
                       <ActivityIndicator
@@ -240,14 +254,14 @@ function HomeScreen({navigation}) {
                     ) : (
                       <>
                         <Image source={{uri: u}} style={styles.pic} />
-                        <View style={styles.trash}>
+                        {/* <View style={styles.trash}>
                           <Ionicons
                             name="trash"
                             size={30}
                             color="red"
                             onPress={() => null}
                           />
-                        </View>
+                        </View> */}
                       </>
                     )}
                     {/* </View> */}

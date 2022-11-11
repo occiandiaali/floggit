@@ -1,5 +1,6 @@
 import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import storage from '@react-native-firebase/storage';
 
@@ -25,6 +26,11 @@ const styles = StyleSheet.create({
     width: 170,
     height: 170,
     margin: 6,
+  },
+  trash: {
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
   },
 });
 
@@ -209,7 +215,17 @@ const UploadScreen = () => {
             {loading ? (
               <ActivityIndicator size={'large'} style={{alignSelf: 'center'}} />
             ) : (
-              <Image source={{uri: u}} style={styles.pic} />
+              <>
+                <Image source={{uri: u}} style={styles.pic} />
+                <View style={styles.trash}>
+                  <Ionicons
+                    name="trash"
+                    size={20}
+                    color="red"
+                    onPress={() => null}
+                  />
+                </View>
+              </>
             )}
           </View>
         ))

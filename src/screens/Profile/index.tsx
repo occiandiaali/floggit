@@ -288,12 +288,17 @@ function ProfileScreen({navigation}) {
           />
         </View> */}
         <View style={styles.bioLine}>
-          <Text style={styles.labels}>my uploads</Text>
+          <Text style={styles.labels}>history</Text>
           <Ionicon
             name="images"
             size={24}
             onPress={() => navigation.navigate('Uploads')}
           />
+        </View>
+
+        <View style={styles.bioLine}>
+          <Text style={styles.labels}>chats</Text>
+          <Ionicon name="chatbox" size={24} onPress={() => null} />
         </View>
 
         <View style={[styles.bioLine, {paddingTop: 36}]}>

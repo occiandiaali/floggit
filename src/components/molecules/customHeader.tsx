@@ -93,13 +93,13 @@ const CustomHeaderComponent = () => {
 
   return (
     <View style={styles.headerContainer}>
-      <Text style={styles.appName}>qrnr</Text>
+      <Text style={styles.appName}>floggit</Text>
       <View style={styles.endItems}>
         <Text style={styles.userLabel}>{email}</Text>
         <Image
           source={{uri: img}}
           style={{
-            marginRight: 12,
+            marginRight: 16,
             bottom: 6,
             width: 30,
             height: 30,

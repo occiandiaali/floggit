@@ -128,6 +128,7 @@ import {AppContext} from './src/redux/contexts';
 import {Provider} from 'react-redux';
 import {store} from './src/redux/store';
 import auth from '@react-native-firebase/auth';
+import PostDetails from './src/screens/PostDetails';
 
 const Tab = createBottomTabNavigator();
 // const HomeStack = createNativeStackNavigator();
@@ -316,6 +317,11 @@ export default function App() {
               options={{headerShown: true, title: 'History'}}
               name="Uploads"
               component={UploadScreen}
+            />
+            <Stack.Screen
+              options={{headerShown: false}}
+              name="PostDetails"
+              component={PostDetails}
             />
           </Stack.Navigator>
         ) : (
