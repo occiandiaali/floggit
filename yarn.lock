@@ -1618,24 +1618,32 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/eslint-plugin/-/eslint-plugin-1.2.0.tgz"
   "version" "1.2.0"
 
-"@react-native-firebase/app@^16.3.1", "@react-native-firebase/app@16.3.1":
-  "integrity" "sha512-2MA90BfXTZ5lZPfWRSv2WfBS83JUKWanqBOMMOLd8/ZjKUfuJrw8uBxWqd8OMTKEWsbjs+VyxcRKH8VDyPM+zQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-16.3.1.tgz"
-  "version" "16.3.1"
+"@react-native-firebase/app@^16.4.3", "@react-native-firebase/app@16.4.3":
+  "integrity" "sha512-6cXm4D3CIVK3N8WMAz+vL/rzjKmoAuFdtdnjLTYsFU/fsQGcsKkZSGiWfMbZASCwcnspRR1/FjyRC5Y4tzqiuA=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-16.4.3.tgz"
+  "version" "16.4.3"
   dependencies:
     "@expo/config-plugins" "^5.0.1"
     "opencollective-postinstall" "^2.0.1"
     "superstruct" "^0.6.2"
 
-"@react-native-firebase/auth@^16.3.1":
-  "integrity" "sha512-zcN0SDzfs6+3AJAmca5ffwEkwEssTW7i2QMvvTzHRJmgVPJv2liWr18DHB+6kWM0tu9QvDhBN3cGml4uTWv49w=="
-  "resolved" "https://registry.npmjs.org/@react-native-firebase/auth/-/auth-16.3.1.tgz"
-  "version" "16.3.1"
+"@react-native-firebase/auth@^16.4.3":
+  "integrity" "sha512-3/cTmRHgwVsmmhM3dmm4N53D6S/xV0L4YHmZyCcFgPqUddFJFFKpYc6tPO/sE47mBgl+s0vCalod4bZEimMGUA=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/auth/-/auth-16.4.3.tgz"
+  "version" "16.4.3"
+  dependencies:
+    "@expo/config-plugins" "^5.0.1"
+    "plist" "^3.0.5"
 
-"@react-native-firebase/storage@^16.3.1":
-  "integrity" "sha512-zZyyepuzfWw8aS4fa3J7bxkW/xu3q94eMF7aboiunexDPjBfy3T+v0afWnLgzQ1HXr43K2cdp8FAZN5wI69sNw=="
-  "resolved" "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-16.3.1.tgz"
-  "version" "16.3.1"
+"@react-native-firebase/firestore@^16.4.3":
+  "integrity" "sha512-T68PkKZzTfXTU8cUJTUUBBKQ4rNZ+XUHGoh38FHqTOLeSATyKa22oDuS+eOtakUSZTUnUEcquJmH5AvqSfsO3A=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-16.4.3.tgz"
+  "version" "16.4.3"
+
+"@react-native-firebase/storage@^16.4.3":
+  "integrity" "sha512-aFE5Aq9CW+F5nqAwVU2WT0HNnUeOYJujde9AoghQgbTMThw45RG2UeMsfOrdg04JpSZVOOE/yjP+cqOfnuLC/Q=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-16.4.3.tgz"
+  "version" "16.4.3"
 
 "@react-native/assets@1.0.0":
   "integrity" "sha512-KrwSpS1tKI70wuKl68DwJZYEvXktDHdZMG0k2AXD/rJVSlB23/X2CB2cutVR0HwNMJIal9HOUOBB2rVfa6UGtQ=="
@@ -2076,9 +2084,9 @@
     "eslint-visitor-keys" "^3.3.0"
 
 "@xmldom/xmldom@~0.7.0":
-  "integrity" "sha512-HHXP9hskkFQHy8QxxUXkS7946FFIhYVfGqsk0WLwllmexN9x/+R4UBLvurHEuyXRfVEObVR8APuQehykLviwSQ=="
-  "resolved" "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.7.6.tgz"
-  "version" "0.7.6"
+  "integrity" "sha512-yceMpm/xd4W2a85iqZyO09gTnHvXF6pyiWjD2jcOJs7hRoZtNNOO1eJlhHj1ixA+xip2hOyGn+LgcvLCMo5zXA=="
+  "resolved" "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.7.9.tgz"
+  "version" "0.7.9"
 
 "abab@^2.0.3", "abab@^2.0.5":
   "integrity" "sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA=="

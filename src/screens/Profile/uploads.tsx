@@ -99,7 +99,7 @@ const UploadScreen = () => {
     //     setSamples(imageUrls);
     //   });
     const picData: string[] = [];
-    const reference = storage().ref('images');
+    const reference = storage().ref('photos');
     await reference.list({pageToken}).then(result => {
       result.items.forEach(ref => {
         // const r = JSON.stringify(ref);
@@ -138,7 +138,7 @@ const UploadScreen = () => {
 
   const getSamples = async () => {
     setLoading(true);
-    const imageRefs = await storage().ref('images').listAll();
+    const imageRefs = await storage().ref('photos').listAll();
     const urls = await Promise.all(
       imageRefs.items.map(ref => ref.getDownloadURL()),
     );

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   View,
 } from 'react-native';
 import React, {useContext, useState} from 'react';
@@ -72,9 +73,14 @@ const SignUpScreen = ({navigation}) => {
   const [text, setText] = useState('');
   const {setAuthed} = useContext(AppContext);
   const [pass, setPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUserName] = useState('');
   const isDisabled = loginDisabled || pass.length < 5;
+
+  const showToast = (msg: string) => {
+    ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.BOTTOM);
+  };
 
   const storeEmail = async (value: string) => {
     try {
@@ -87,16 +93,21 @@ const SignUpScreen = ({navigation}) => {
   };
 
   const handleSubmitPress = async () => {
-    if (!email) {
-      Alert.alert('Warning', 'Enter email');
-      return;
-    }
-    if (!pass || pass.length < 6) {
-      Alert.alert('Warning', 'Enter password greater than 5 xters');
-      return;
-    }
     if (!username) {
-      Alert.alert('Warning', 'No user name set!');
+      showToast('Enter a user name...');
+      //  Alert.alert('Warning', 'No user name set!');
+      return;
+    } else if (!email) {
+      showToast('Email NOT set!');
+      // Alert.alert('Warning', 'Enter email');
+      return;
+    } else if (!pass || pass.length < 6) {
+      showToast('Password must be > 5 xters!');
+      // Alert.alert('Warning', 'Enter password greater than 5 xters');
+      return;
+    } else if (pass !== confirmPass) {
+      showToast('Password must match!');
+      // Alert.alert('Warning', 'Enter password greater than 5 xters');
       return;
     }
     try {
@@ -162,6 +173,15 @@ const SignUpScreen = ({navigation}) => {
         }}
         onChangeText={newPass => setPass(newPass)}
         placeholder="password"
+        secureTextEntry={true}
+        style={styles.inputFld}
+      />
+      <TextInput
+        onChange={() => {
+          setLoginDisabled(false);
+        }}
+        onChangeText={newPass => setConfirmPass(newPass)}
+        placeholder="confirm password"
         secureTextEntry={true}
         style={styles.inputFld}
       />

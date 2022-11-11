@@ -127,6 +127,7 @@ import {AppContext} from './src/redux/contexts';
 //import Firebase, {FirebaseProvider} from './src/utils';
 import {Provider} from 'react-redux';
 import {store} from './src/redux/store';
+import auth from '@react-native-firebase/auth';
 
 const Tab = createBottomTabNavigator();
 // const HomeStack = createNativeStackNavigator();
@@ -283,6 +284,22 @@ export default function App() {
   //     </NavigationContainer>
   //   </AppContext.Provider>
   // );
+  function userStateChange(user) {
+    if (user) {
+      setAuthed(true);
+    }
+  }
+  function currentUserStat() {
+    const user = auth().currentUser;
+    console.log('User email ', user?.email);
+    console.log('User uid ', user?.uid);
+  }
+
+  React.useEffect(() => {
+    currentUserStat();
+    const subscriber = auth().onAuthStateChanged(userStateChange);
+    return subscriber;
+  }, []);
 
   return (
     <AppContext.Provider value={appContextValue}>

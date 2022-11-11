@@ -18,6 +18,8 @@ import {useIsFocused} from '@react-navigation/native';
 //import {v4 as uuidv4} from 'uuid';
 //import firebase from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import {
   CameraOptions,
   ImageLibraryOptions,
@@ -45,10 +47,16 @@ function PostingScreen() {
   const [imagePath, setImagePath] = useState('');
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
+  const [postCategory, setPostCategory] = useState('');
+  const [postTitle, setPostTitle] = useState('');
+  const [postPrice, setPostPrice] = useState('');
+  const [postDesc, setPostDesc] = useState('');
 
   const showToast = (msg: string) => {
     ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.BOTTOM);
   };
+
+  // const userid = auth().currentUser?.uid;
 
   const reqCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -218,32 +226,80 @@ function PostingScreen() {
       Platform.OS === 'ios' ? imagePath.replace('file://', '') : imagePath;
     //const id = uuidv4();
 
+    // const extension = filename.split('.').pop();
+    // const namee = filename.split('.').slice(0, -1).join('.');
+    // const formatFile = namee + Date.now() + '.' + extension;
+
     setUploading(true);
     setTransferred(0);
 
-    const task = storage()
-      .ref(`images/leveltwos/${filename}`)
-      .putFile(uploadUri);
+    // const task = storage()
+    //   .ref(`images/leveltwos/${filename}`)
+    //   .putFile(uploadUri);
+    const storageRef = storage().ref(
+      `photos/${postCategory.toLowerCase()}/${filename}`,
+    );
+    const task = storageRef.putFile(uploadUri);
+    // const task = storage()
+    //   .ref(`photos/${postCategory.toLowerCase()}/${filename}`)
+    //   .putFile(uploadUri);
 
-    task.on('state_changed', snapshot => {
+    task.on('state_changed', taskSnapshot => {
       setTransferred(
-        Math.round((snapshot.bytesTransferred * 100) / snapshot.totalBytes),
+        Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
+          100,
+        //  Math.round((snapshot.bytesTransferred * 100) / snapshot.totalBytes),
       );
     });
 
     try {
+      console.log('Post details====================================');
+      console.log(postCategory);
+      console.log(postTitle);
+      console.log(postPrice);
+      console.log(postDesc);
+      console.log('====================================');
+      // console.log('Format ', formatFile);
       await task;
+      const url = await storageRef.getDownloadURL();
+      setUploading(false);
+      Platform.OS === 'android'
+        ? showToast('Image has been uploaded!')
+        : Alert.alert('Success!', 'Image has been uploaded!');
+      // Alert.alert('Success!', 'Image has been uploaded!');
+      setImagePath('');
+      return url;
     } catch (error) {
       console.log('Task err====================================');
       console.log(error);
       console.log('====================================');
+      return null;
     }
-    setUploading(false);
-    Platform.OS === 'android'
-      ? showToast('Image has been uploaded!')
-      : Alert.alert('Success!', 'Image has been uploaded!');
-    // Alert.alert('Success!', 'Image has been uploaded!');
-    setImagePath('');
+  };
+
+  const cUser = auth().currentUser;
+
+  const submitPost = async () => {
+    const imgUrl = await uploadPost();
+    firestore()
+      .collection('Posts')
+      .add({
+        userid: cUser?.uid,
+        category: postCategory,
+        title: postTitle,
+        price: postPrice,
+        description: postDesc,
+        created: firestore.Timestamp.fromDate(new Date()),
+        imageurl: imgUrl,
+      })
+      .then(() => {
+        setPostCategory('');
+        setPostTitle('');
+        setPostPrice('');
+        setPostDesc('');
+        showToast('Post submitted..');
+      })
+      .catch(e => console.log('Submit err ', e));
   };
 
   return (
@@ -253,12 +309,16 @@ function PostingScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {imagePath !== '' ? (
           <View style={{padding: 8}}>
-            <Image
-              source={{uri: imagePath}}
-              style={{width: '100%', height: 350}}
-            />
-            <CustomDropDown label="Select category" />
+            <View style={{width: '100%', bottom: 8}}>
+              <Image
+                source={{uri: imagePath}}
+                // style={{width: '100%', height: 350}}
+                style={{width: 550, height: 350, right: 18}}
+              />
+            </View>
+            <CustomDropDown setChoice={setPostCategory} />
             <TextInput
+              onChangeText={title => setPostTitle(title)}
               placeholder="Item title"
               textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
               style={{
@@ -270,6 +330,7 @@ function PostingScreen() {
               }}
             />
             <TextInput
+              onChangeText={price => setPostPrice(price)}
               placeholder="Asking price"
               textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
               keyboardType="number-pad"
@@ -284,6 +345,7 @@ function PostingScreen() {
             <TextInput
               multiline={true}
               numberOfLines={3}
+              onChangeText={desc => setPostDesc(desc)}
               textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
               placeholder="Describe the item.."
               style={{
@@ -312,7 +374,7 @@ function PostingScreen() {
                   </Text>
                 </View>
               ) : (
-                <Button onPress={uploadPost} title="publish" />
+                <Button onPress={submitPost} title="publish" />
               )}
             </View>
           </View>

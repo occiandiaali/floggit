@@ -53,11 +53,12 @@ interface Props {
   // onSelect: (item: {label: string; value: string}) => void;
 }
 
-const CustomDropDown: FC<Props> = ({label}) => {
+//const CustomDropDown: FC<Props> = ({setLabel}) => {
+const CustomDropDown = ({setChoice}) => {
   const DropdownButton = useRef();
   const [dropDownTop, setDropDownTop] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState({label});
+  const [selected, setSelected] = useState('Select category');
 
   const dropdownCategories = [
     {
@@ -74,13 +75,15 @@ const CustomDropDown: FC<Props> = ({label}) => {
     },
   ];
 
+  const categories = ['Electronics', 'Fashion', 'Household'];
+
   const toggleDrop = (): void => {
     visible ? setVisible(false) : setVisible(true);
   };
 
   const renderItem = ({item}) => (
     <Pressable onPress={() => onItemPress(item)} style={styles.item}>
-      <Text>{item.label}</Text>
+      <Text>{item}</Text>
     </Pressable>
   );
 
@@ -93,7 +96,8 @@ const CustomDropDown: FC<Props> = ({label}) => {
       <Pressable onPress={() => setVisible(false)}>
         <View style={styles.dropdown}>
           <FlatList
-            data={dropdownCategories}
+            // data={dropdownCategories}
+            data={categories}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -104,6 +108,7 @@ const CustomDropDown: FC<Props> = ({label}) => {
 
   const onItemPress = (item): void => {
     setSelected(item);
+    setChoice(item);
     // onSelect(item);
     setVisible(false);
   };
@@ -116,7 +121,7 @@ const CustomDropDown: FC<Props> = ({label}) => {
         style={styles.dropperPresser}>
         <>
           {/* {renderDrop()} */}
-          <Text style={styles.dropperWrapText}>{selected.label}</Text>
+          <Text style={styles.dropperWrapText}>{selected}</Text>
           <Icon name={visible ? 'caret-up' : 'caret-down'} size={18} />
           {renderDrop()}
         </>
