@@ -79,6 +79,8 @@ const CustomHeaderComponent = () => {
       const value = await AsyncStorage.getItem('@avatar_Key');
       if (value !== '') {
         setImg(value);
+      } else {
+        setImg('https://images.pexels.com/photos/36675/pexels-photo.jpg');
       }
     } catch (error) {
       console.log('Avatar get err====================================');

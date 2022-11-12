@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomHeaderComponent from '../../components/molecules/customHeader';
 
 import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   carouselBoxLabel: {
@@ -41,32 +42,44 @@ const styles = StyleSheet.create({
     margin: 8,
     width: 320,
     height: 200,
+    borderRadius: 10,
+  },
+  picPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'blue',
+  },
+  picPriceV: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+  },
+  picTxt: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'blue',
+  },
+  picTxtV: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
   },
   promotedWrapper: {},
   levels: {
     paddingBottom: 8,
   },
-  level1Label: {
+  levelLabel: {
     fontSize: 21,
     fontWeight: 'bold',
     paddingLeft: 12,
-  },
-  level2Label: {
-    fontSize: 21,
-    fontWeight: 'bold',
-    paddingLeft: 12,
-  },
-  level3Label: {
-    fontSize: 21,
-    fontWeight: 'bold',
-    paddingLeft: 12,
+    paddingBottom: 8,
   },
   levelsWrapper: {
     padding: 6,
   },
   trash: {
     position: 'absolute',
-    // top: 10,
+
     right: 10,
     bottom: 10,
   },
@@ -77,72 +90,131 @@ const styles = StyleSheet.create({
   },
 });
 
+const placeholderUri = '../../assets/images/business.png';
+
 const promos = [
   {
     id: 1,
     label: 'ONE',
+    img: placeholderUri,
   },
   {
     id: 2,
     label: 'TWO',
+    img: placeholderUri,
   },
   {
     id: 3,
     label: 'THREE',
+    img: placeholderUri,
   },
   {
     id: 4,
     label: 'FOUR',
+    img: placeholderUri,
   },
   {
     id: 5,
     label: 'FIVE',
-  },
-  {
-    id: 6,
-    label: 'SIX',
+    img: placeholderUri,
   },
 ];
 
 function HomeScreen({navigation}) {
-  //  const [samples, setSamples] = useState<string[]>([]);
-  //  const [samples2, setSamples2] = useState<string[]>([]);
-  const [electronics, setElectronics] = useState<string[]>([]);
-  const [fashion, setFashion] = useState<string[]>([]);
-  const [household, setHousehold] = useState<string[]>([]);
+  const [electronics, setElectronics] = useState<Object[]>([
+    {
+      img: '',
+      titular: '',
+      price: '',
+      desc: '',
+    },
+  ]);
+  const [household, setHousehold] = useState<Object[]>([
+    {
+      img: '',
+      titular: '',
+      price: '',
+      desc: '',
+    },
+  ]);
+  const [fashion, setFashion] = useState<Object[]>([
+    {
+      img: '',
+      titular: '',
+      price: '',
+      desc: '',
+    },
+  ]);
 
   const [loading, setLoading] = useState(false);
-  // const [loading2, setLoading2] = useState(false);
 
-  const setElectronicsState = async () => {
+  const getElectronics = async () => {
     setLoading(true);
-    const imageRefs = await storage().ref('photos/electronics').listAll();
-    const urls = await Promise.all(
-      imageRefs.items.map(ref => ref.getDownloadURL()),
-    );
-    setElectronics(urls);
-    setLoading(false);
+    return await firestore()
+      .collection('Posts')
+      .where('category', '==', 'Electronics')
+      .get()
+      .then(querySnapshot => {
+        const newData = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          img: doc.data().imageurl ?? placeholderUri,
+          titular: doc.data().title,
+          price: doc.data().price,
+          desc: doc.data().description,
+        }));
+        setElectronics(newData);
+        setLoading(false);
+      })
+      .catch(e => console.log(e));
+  };
+  const getHousehold = async () => {
+    setLoading(true);
+    return await firestore()
+      .collection('Posts')
+      .where('category', '==', 'Household')
+      .get()
+      .then(querySnapshot => {
+        const newData = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          img: doc.data().imageurl ?? placeholderUri,
+          titular: doc.data().title,
+          price: doc.data().price,
+          desc: doc.data().description,
+        }));
+        setHousehold(newData);
+        setLoading(false);
+      })
+      .catch(e => console.log(e));
+  };
+  const getFashion = async () => {
+    setLoading(true);
+    return await firestore()
+      .collection('Posts')
+      .where('category', '==', 'Fashion')
+      .get()
+      .then(querySnapshot => {
+        const newData = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          img: doc.data().imageurl ?? placeholderUri,
+          titular: doc.data().title,
+          price: doc.data().price,
+          desc: doc.data().description,
+        }));
+        setFashion(newData);
+        setLoading(false);
+      })
+      .catch(e => console.log(e));
   };
 
-  const setHouseholdState = async () => {
-    setLoading(true);
-    const imageRefs = await storage().ref('photos/household').listAll();
-    const urls = await Promise.all(
-      imageRefs.items.map(ref => ref.getDownloadURL()),
-    );
-    setHousehold(urls);
-    setLoading(false);
-  };
-
-  const setFashionState = async () => {
-    setLoading(true);
-    const imageRefs = await storage().ref('photos/fashion').listAll();
-    const urls = await Promise.all(
-      imageRefs.items.map(ref => ref.getDownloadURL()),
-    );
-    setFashion(urls);
-    setLoading(false);
-  };
+  // const setElectronicsState = async () => {
+  //   setLoading(true);
+  //   const imageRefs = await storage().ref('photos/electronics').listAll();
+  //   const urls = await Promise.all(
+  //     imageRefs.items.map(ref => ref.getDownloadURL()),
+  //   );
+  //   setElectronics(urls);
+  //   setLoading(false);
+  // };
 
   // const getSamples = async () => {
   //   setLoading(true);
@@ -156,40 +228,24 @@ function HomeScreen({navigation}) {
   //   setLoading(false);
   // };
 
-  // const getLevelTwos = async () => {
-  //   setLoading2(true);
-  //   const levelTwos = await storage().ref('images/leveltwos').list();
-  //   const urls = await Promise.all(
-  //     levelTwos.items.map(ref => ref.getDownloadURL()),
-  //   );
-  //   console.log('level twos refs ', urls);
-  //   setSamples2(urls);
-  //   setLoading2(false);
-  // };
-
-  // useEffect(() => {
-  //   try {
-  //     // getSamples();
-  //     // getLevelTwos();
-  //     setElectronicsState();
-  //     setHouseholdState();
-  //     setFashionState();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, []);
   useEffect(() => {
+    // catLog();
     try {
       const unsubscribe = navigation.addListener('focus', () => {
-        setElectronicsState();
-        setHouseholdState();
-        setFashionState();
+        // setElectronicsState();
+        getElectronics();
+        // setHouseholdState();
+        getHousehold();
+        // setFashionState();
+        getFashion();
       });
       return unsubscribe;
     } catch (error) {
       console.log(error);
     }
   }, [navigation]);
+
+  //
 
   return (
     <View style={styles.wrapper}>
@@ -217,55 +273,44 @@ function HomeScreen({navigation}) {
         style={styles.levelsWrapper}
         showsVerticalScrollIndicator={false}>
         <View style={styles.levels}>
-          <Text style={styles.level1Label}>Electronics</Text>
+          <Text style={styles.levelLabel}>Electronics</Text>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-            {/* {promos.map(el => (
-              <View
-                key={el.id}
-                style={{
-                  margin: 8,
-                  width: 320,
-                  height: 200,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 12,
-                  borderColor: 'pink',
-                  borderWidth: 1.5,
-                  // backgroundColor: 'teal',
-                }}>
-                <Text>{el.label}</Text>
-              </View>
-            ))} */}
             {electronics.length !== 0
-              ? electronics.map((u, i) => (
-                  <Pressable
-                    style={styles.item}
-                    key={i}
-                    onPress={() => {
-                      console.log('Pressed ', u);
-                      navigation.navigate('PostDetails');
-                    }}>
-                    {/* <View style={styles.item} key={i}> */}
+              ? electronics?.map((el, i) => (
+                  <View style={styles.item} key={i}>
                     {loading ? (
                       <ActivityIndicator
                         size={'large'}
                         style={{alignSelf: 'center'}}
                       />
                     ) : (
-                      <>
-                        <Image source={{uri: u}} style={styles.pic} />
-                        {/* <View style={styles.trash}>
-                          <Ionicons
-                            name="trash"
-                            size={30}
-                            color="red"
-                            onPress={() => null}
-                          />
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate('PostDetails', {
+                            itemImg: el.img,
+                            itemName: el.titular,
+                            itemPrice: el.price,
+                            itemDesc: el.desc,
+                          })
+                        }>
+                        <Image source={{uri: el.img}} style={styles.pic} />
+                        {/* <View style={styles.picPriceV}>
+                          <Text style={styles.picPrice}>₦{el.price}</Text>
                         </View> */}
-                      </>
+                        <View style={styles.picPriceV}>
+                          <Text style={styles.picPrice}>
+                            {new Intl.NumberFormat('ng-NG', {
+                              style: 'currency',
+                              currency: 'NGN',
+                            }).format(el.price)}
+                          </Text>
+                        </View>
+                        <View style={styles.picTxtV}>
+                          <Text style={styles.picTxt}>{el.titular}</Text>
+                        </View>
+                      </Pressable>
                     )}
-                    {/* </View> */}
-                  </Pressable>
+                  </View>
                 ))
               : promos.map(el => (
                   <View
@@ -286,32 +331,12 @@ function HomeScreen({navigation}) {
                 ))}
           </ScrollView>
         </View>
-        {/* <View style={styles.levels}>
-          <Text style={styles.level2Label}>Level Two</Text>
-          <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-            {promos.map(el => (
-              <View
-                key={el.id}
-                style={{
-                  margin: 8,
-                  width: 320,
-                  height: 200,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 12,
-                  borderColor: 'pink',
-                  borderWidth: 1.5,
-                }}>
-                <Text>{el.label}</Text>
-              </View>
-            ))}
-          </ScrollView>
-        </View> */}
+
         <View style={styles.levels}>
-          <Text style={styles.level1Label}>Household</Text>
+          <Text style={styles.levelLabel}>Household</Text>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
             {household.length !== 0
-              ? household.map((u, i) => (
+              ? household?.map((el, i) => (
                   <View style={styles.item} key={i}>
                     {loading ? (
                       <ActivityIndicator
@@ -319,7 +344,28 @@ function HomeScreen({navigation}) {
                         style={{alignSelf: 'center'}}
                       />
                     ) : (
-                      <Image source={{uri: u}} style={styles.pic} />
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate('PostDetails', {
+                            itemImg: el.img,
+                            itemName: el.titular,
+                            itemPrice: el.price,
+                            itemDesc: el.desc,
+                          })
+                        }>
+                        <Image source={{uri: el.img}} style={styles.pic} />
+                        <View style={styles.picPriceV}>
+                          <Text style={styles.picPrice}>
+                            {new Intl.NumberFormat('ng-NG', {
+                              style: 'currency',
+                              currency: 'NGN',
+                            }).format(el.price)}
+                          </Text>
+                        </View>
+                        <View style={styles.picTxtV}>
+                          <Text style={styles.picTxt}>{el.titular}</Text>
+                        </View>
+                      </Pressable>
                     )}
                   </View>
                 ))
@@ -342,32 +388,12 @@ function HomeScreen({navigation}) {
                 ))}
           </ScrollView>
         </View>
-        {/* <View style={styles.levels}>
-          <Text style={styles.level3Label}>Fashion</Text>
-          <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-            {promos.map(el => (
-              <View
-                key={el.id}
-                style={{
-                  margin: 8,
-                  width: 320,
-                  height: 200,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 12,
-                  borderColor: 'pink',
-                  borderWidth: 1.5,
-                }}>
-                <Text>{el.label}</Text>
-              </View>
-            ))}
-          </ScrollView>
-        </View> */}
+
         <View style={styles.levels}>
-          <Text style={styles.level1Label}>Fashion</Text>
+          <Text style={styles.levelLabel}>Fashion</Text>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
             {fashion.length !== 0
-              ? fashion.map((u, i) => (
+              ? fashion?.map((el, i) => (
                   <View style={styles.item} key={i}>
                     {loading ? (
                       <ActivityIndicator
@@ -375,7 +401,28 @@ function HomeScreen({navigation}) {
                         style={{alignSelf: 'center'}}
                       />
                     ) : (
-                      <Image source={{uri: u}} style={styles.pic} />
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate('PostDetails', {
+                            itemImg: el.img,
+                            itemName: el.titular,
+                            itemPrice: el.price,
+                            itemDesc: el.desc,
+                          })
+                        }>
+                        <Image source={{uri: el.img}} style={styles.pic} />
+                        <View style={styles.picPriceV}>
+                          <Text style={styles.picPrice}>
+                            {new Intl.NumberFormat('ng-NG', {
+                              style: 'currency',
+                              currency: 'NGN',
+                            }).format(el.price)}
+                          </Text>
+                        </View>
+                        <View style={styles.picTxtV}>
+                          <Text style={styles.picTxt}>{el.titular}</Text>
+                        </View>
+                      </Pressable>
                     )}
                   </View>
                 ))

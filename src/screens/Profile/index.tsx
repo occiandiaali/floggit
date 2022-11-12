@@ -192,10 +192,24 @@ function ProfileScreen({navigation}) {
   };
   const getAvatar = async () => {
     try {
-      const value = await AsyncStorage.getItem('@avatar_Key');
-      if (value !== '') {
-        setImagePath(value);
+      const value1 = await AsyncStorage.getItem('@avatar_Key');
+      if (value1 !== '') {
+        setImagePath(value1);
       }
+      const value2 = await AsyncStorage.getItem('@username_Key');
+      if (value2 !== '') {
+        setUser(value2);
+      }
+    } catch (error) {
+      console.log('Avatar get err====================================');
+      console.log(error);
+      console.log('====================================');
+    }
+  };
+  const localUpdateUsername = async (newUsername: string) => {
+    try {
+      setUser(newUsername);
+      await AsyncStorage.setItem('@username_Key', newUsername);
     } catch (error) {
       console.log('Avatar get err====================================');
       console.log(error);
@@ -208,7 +222,8 @@ function ProfileScreen({navigation}) {
       Alert.alert('Notice', 'We changed nothing, because you typed nothing!');
       return;
     } else {
-      setUser(value);
+      // setUser(value);
+      localUpdateUsername(value);
       auth().currentUser?.updateProfile({
         displayName: user,
       });
@@ -223,7 +238,7 @@ function ProfileScreen({navigation}) {
     const subscriber = auth().onAuthStateChanged(user => {
       console.log('User ', JSON.stringify(user?.displayName));
       setUserEmail(user?.email);
-      setUser(user?.displayName);
+      // setUser(user?.displayName);
     });
     return subscriber;
   }, []);

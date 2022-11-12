@@ -8,6 +8,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     color: 'white',
+    paddingBottom: 12,
+    zIndex: 7,
   },
   container: {
     flex: 1,
@@ -15,11 +17,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  imageOverlay: {
+    position: 'absolute',
+    height: 110,
+    width: '100%',
+    backgroundColor: '#ABAAAA',
+    opacity: 0.7,
+    justifyContent: 'flex-end',
+    paddingBottom: 8,
+  },
   label: {
     fontSize: 21,
     position: 'absolute',
     left: 20,
     color: 'white',
+    paddingBottom: 12,
+    zIndex: 7,
   },
   pressable: {
     width: 100,
@@ -45,23 +58,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const PostDetails = ({navigation}) => {
+const PostDetails = ({route, navigation}) => {
+  const {itemDesc, itemImg, itemPrice, itemName} = route.params;
+
   return (
     <View style={styles.container}>
       <Image
         source={{
-          uri: 'https://images.pexels.com/photos/10450623/pexels-photo-10450623.jpeg',
+          //  uri: 'https://images.pexels.com/photos/10450623/pexels-photo-10450623.jpeg',
+          uri: itemImg,
         }}
         // style={{width: '100%', height: 350}}
-        style={{width: 550, height: 450, bottom: '10%'}}
+        style={{width: 550, height: '58%', bottom: '13%'}}
       />
-      <Text style={styles.label}>Table Fan</Text>
-      <Ionicons
-        onPress={() => navigation.goBack()}
-        name="arrow-back"
-        size={32}
-        style={styles.arrow}
-      />
+      <View style={styles.imageOverlay}>
+        <Text style={styles.label}>{itemName}</Text>
+        <Ionicons
+          onPress={() => navigation.goBack()}
+          name="arrow-back"
+          size={32}
+          style={styles.arrow}
+        />
+      </View>
       <View style={styles.rowOne}>
         <Image
           source={{
@@ -76,17 +94,27 @@ const PostDetails = ({navigation}) => {
           }}
         />
         <Text style={{marginRight: '10%', fontSize: 16}}>owner@mail.com</Text>
-        <Text style={{marginLeft: '20%', fontSize: 16, fontWeight: 'bold'}}>
-          ₦67800
+        <Text
+          style={{
+            marginLeft: '6%',
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: 'black',
+          }}>
+          {new Intl.NumberFormat('ng-NG', {
+            style: 'currency',
+            currency: 'NGN',
+          }).format(itemPrice)}
         </Text>
       </View>
       <View style={styles.rowTwo}>
-        <Text style={{fontSize: 18}}>
+        <Text style={{fontSize: 18}}>{itemDesc}</Text>
+        {/* <Text style={{fontSize: 18}}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio
           praesentium nemo repudiandae dolorem voluptatum sed ratione, expedita
           pariatur reprehenderit a. Tenetur quidem sit repellendus reiciendis
           ducimus perferendis dolor accusamus dignissimos.
-        </Text>
+        </Text> */}
       </View>
       <View style={styles.rowThree}>
         <Pressable onPress={() => null} style={styles.pressable}>

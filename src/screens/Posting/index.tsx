@@ -305,7 +305,7 @@ function PostingScreen() {
           setPostTitle('');
           setPostPrice('');
           setPostDesc('');
-          showToast('Post submitted..');
+          // showToast('Post submitted..');
         })
         .catch(e => console.log('Submit err ', e));
     } else {
