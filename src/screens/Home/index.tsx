@@ -20,13 +20,19 @@ const styles = StyleSheet.create({
   carouselBoxLabel: {
     width: 100,
     height: 30,
-    backgroundColor: 'white',
-    color: 'black',
+    borderRadius: 6,
+    backgroundColor: '#ABAAAA',
+    opacity: 0.5,
+    color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
     textAlignVertical: 'center',
     position: 'absolute',
     bottom: 20,
+  },
+  headingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   item: {
     margin: 8,
@@ -37,6 +43,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderColor: 'pink',
     borderWidth: 1.5,
+  },
+  levelLabel: {
+    fontSize: 21,
+    fontWeight: 'bold',
+    paddingLeft: 12,
+    paddingBottom: 8,
+    color: '#000',
+  },
+  levelsWrapper: {
+    padding: 6,
   },
   pic: {
     margin: 8,
@@ -64,18 +80,23 @@ const styles = StyleSheet.create({
     top: 20,
     left: 20,
   },
+  timeV: {
+    position: 'absolute',
+    top: 20,
+    right: 10,
+  },
+  time: {
+    fontSize: 14,
+    color: 'blue',
+  },
   promotedWrapper: {},
   levels: {
     paddingBottom: 8,
   },
-  levelLabel: {
-    fontSize: 21,
-    fontWeight: 'bold',
-    paddingLeft: 12,
-    paddingBottom: 8,
-  },
-  levelsWrapper: {
-    padding: 6,
+  seeAllLabel: {
+    fontSize: 16,
+    right: 16,
+    top: 6,
   },
   trash: {
     position: 'absolute',
@@ -123,30 +144,38 @@ const promos = [
 function HomeScreen({navigation}) {
   const [electronics, setElectronics] = useState<Object[]>([
     {
-      img: '',
+      userid: '',
+      img: null,
       titular: '',
       price: '',
       desc: '',
+      createdat: new Date(),
     },
   ]);
   const [household, setHousehold] = useState<Object[]>([
     {
-      img: '',
+      userid: '',
+      img: null,
       titular: '',
       price: '',
       desc: '',
+      createdat: new Date(),
     },
   ]);
-  const [fashion, setFashion] = useState<Object[]>([
+  const [automobiles, setAutomobiles] = useState<Object[]>([
     {
-      img: '',
+      userid: '',
+      img: null,
       titular: '',
       price: '',
       desc: '',
+      createdat: new Date(),
     },
   ]);
 
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState('');
+  const [img, setImg] = useState(null);
 
   const getElectronics = async () => {
     setLoading(true);
@@ -157,10 +186,12 @@ function HomeScreen({navigation}) {
       .then(querySnapshot => {
         const newData = querySnapshot.docs.map(doc => ({
           ...doc.data(),
+          userid: doc.data().userid,
           img: doc.data().imageurl ?? placeholderUri,
           titular: doc.data().title,
           price: doc.data().price,
           desc: doc.data().description,
+          createdat: doc.data().created,
         }));
         setElectronics(newData);
         setLoading(false);
@@ -176,68 +207,59 @@ function HomeScreen({navigation}) {
       .then(querySnapshot => {
         const newData = querySnapshot.docs.map(doc => ({
           ...doc.data(),
+          userid: doc.data().userid,
           img: doc.data().imageurl ?? placeholderUri,
           titular: doc.data().title,
           price: doc.data().price,
           desc: doc.data().description,
+          createdat: doc.data().created,
         }));
         setHousehold(newData);
         setLoading(false);
       })
       .catch(e => console.log(e));
   };
-  const getFashion = async () => {
+  const getAutomobiles = async () => {
     setLoading(true);
     return await firestore()
       .collection('Posts')
-      .where('category', '==', 'Fashion')
+      .where('category', '==', 'Automobiles')
       .get()
       .then(querySnapshot => {
         const newData = querySnapshot.docs.map(doc => ({
           ...doc.data(),
+          userid: doc.data().userid,
           img: doc.data().imageurl ?? placeholderUri,
           titular: doc.data().title,
           price: doc.data().price,
           desc: doc.data().description,
+          createdat: doc.data().created,
         }));
-        setFashion(newData);
+        setAutomobiles(newData);
         setLoading(false);
       })
       .catch(e => console.log(e));
   };
 
-  // const setElectronicsState = async () => {
-  //   setLoading(true);
-  //   const imageRefs = await storage().ref('photos/electronics').listAll();
-  //   const urls = await Promise.all(
-  //     imageRefs.items.map(ref => ref.getDownloadURL()),
-  //   );
-  //   setElectronics(urls);
-  //   setLoading(false);
-  // };
-
-  // const getSamples = async () => {
-  //   setLoading(true);
-  //   const imageRefs = await storage().ref('images').listAll();
-  //   // const imageRefs = await storage().ref('images').list({maxResults: 3});
-  //   const urls = await Promise.all(
-  //     imageRefs.items.map(ref => ref.getDownloadURL()),
-  //   );
-  //   // console.log('urls refs ', urls);
-  //   setSamples(urls);
-  //   setLoading(false);
-  // };
+  const getUsernameAndAvatar = async () => {
+    await firestore()
+      .collection('Users')
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(item => {
+          setUser(item.data().username);
+          setImg(item.data().profileImg);
+        });
+      });
+  };
 
   useEffect(() => {
-    // catLog();
     try {
       const unsubscribe = navigation.addListener('focus', () => {
-        // setElectronicsState();
+        getUsernameAndAvatar();
         getElectronics();
-        // setHouseholdState();
         getHousehold();
-        // setFashionState();
-        getFashion();
+        getAutomobiles();
       });
       return unsubscribe;
     } catch (error) {
@@ -245,11 +267,9 @@ function HomeScreen({navigation}) {
     }
   }, [navigation]);
 
-  //
-
   return (
     <View style={styles.wrapper}>
-      <CustomHeaderComponent />
+      <CustomHeaderComponent cUser={user} cAvatar={img} />
       <View style={styles.promotedWrapper}>
         <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
           {promos.map(el => (
@@ -273,7 +293,10 @@ function HomeScreen({navigation}) {
         style={styles.levelsWrapper}
         showsVerticalScrollIndicator={false}>
         <View style={styles.levels}>
-          <Text style={styles.levelLabel}>Electronics</Text>
+          <View style={styles.headingRow}>
+            <Text style={styles.levelLabel}>Electronics</Text>
+            <Text style={styles.seeAllLabel}>See all</Text>
+          </View>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
             {electronics.length !== 0
               ? electronics?.map((el, i) => (
@@ -287,10 +310,12 @@ function HomeScreen({navigation}) {
                       <Pressable
                         onPress={() =>
                           navigation.navigate('PostDetails', {
+                            userid: el.userid,
                             itemImg: el.img,
                             itemName: el.titular,
                             itemPrice: el.price,
                             itemDesc: el.desc,
+                            itemCreation: el.createdat,
                           })
                         }>
                         <Image source={{uri: el.img}} style={styles.pic} />
@@ -324,7 +349,6 @@ function HomeScreen({navigation}) {
                       borderRadius: 12,
                       borderColor: 'pink',
                       borderWidth: 1.5,
-                      // backgroundColor: 'teal',
                     }}>
                     <Text>{el.label}</Text>
                   </View>
@@ -333,7 +357,10 @@ function HomeScreen({navigation}) {
         </View>
 
         <View style={styles.levels}>
-          <Text style={styles.levelLabel}>Household</Text>
+          <View style={styles.headingRow}>
+            <Text style={styles.levelLabel}>Household</Text>
+            <Text style={styles.seeAllLabel}>See all</Text>
+          </View>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
             {household.length !== 0
               ? household?.map((el, i) => (
@@ -347,10 +374,12 @@ function HomeScreen({navigation}) {
                       <Pressable
                         onPress={() =>
                           navigation.navigate('PostDetails', {
+                            userid: el.userid,
                             itemImg: el.img,
                             itemName: el.titular,
                             itemPrice: el.price,
                             itemDesc: el.desc,
+                            itemCreation: el.createdat,
                           })
                         }>
                         <Image source={{uri: el.img}} style={styles.pic} />
@@ -381,7 +410,6 @@ function HomeScreen({navigation}) {
                       borderRadius: 12,
                       borderColor: 'pink',
                       borderWidth: 1.5,
-                      // backgroundColor: 'teal',
                     }}>
                     <Text>{el.label}</Text>
                   </View>
@@ -390,10 +418,13 @@ function HomeScreen({navigation}) {
         </View>
 
         <View style={styles.levels}>
-          <Text style={styles.levelLabel}>Fashion</Text>
+          <View style={styles.headingRow}>
+            <Text style={styles.levelLabel}>Automobiles</Text>
+            <Text style={styles.seeAllLabel}>See all</Text>
+          </View>
           <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-            {fashion.length !== 0
-              ? fashion?.map((el, i) => (
+            {automobiles.length !== 0
+              ? automobiles?.map((el, i) => (
                   <View style={styles.item} key={i}>
                     {loading ? (
                       <ActivityIndicator
@@ -404,10 +435,12 @@ function HomeScreen({navigation}) {
                       <Pressable
                         onPress={() =>
                           navigation.navigate('PostDetails', {
+                            userid: el.userid,
                             itemImg: el.img,
                             itemName: el.titular,
                             itemPrice: el.price,
                             itemDesc: el.desc,
+                            itemCreation: el.createdat,
                           })
                         }>
                         <Image source={{uri: el.img}} style={styles.pic} />

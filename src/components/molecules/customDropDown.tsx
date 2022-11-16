@@ -75,7 +75,7 @@ const CustomDropDown = ({setChoice}) => {
     },
   ];
 
-  const categories = ['Electronics', 'Fashion', 'Household'];
+  const categories = ['Electronics', 'Automobiles', 'Household'];
 
   const toggleDrop = (): void => {
     visible ? setVisible(false) : setVisible(true);

@@ -1,12 +1,14 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import firestore from '@react-native-firebase/firestore';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const styles = StyleSheet.create({
   arrow: {
     position: 'absolute',
-    right: 20,
+    top: 6,
+    alignSelf: 'center',
     color: 'white',
     paddingBottom: 12,
     zIndex: 7,
@@ -21,10 +23,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 110,
     width: '100%',
-    backgroundColor: '#ABAAAA',
-    opacity: 0.7,
-    justifyContent: 'flex-end',
-    paddingBottom: 8,
+    top: 0,
+    backgroundColor: '#000',
+    opacity: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
   },
   label: {
     fontSize: 21,
@@ -46,7 +50,7 @@ const styles = StyleSheet.create({
   rowOne: {
     padding: 6,
     flexDirection: 'row',
-    bottom: '15%',
+    bottom: '25%',
   },
   rowTwo: {
     flexDirection: 'row',
@@ -56,23 +60,49 @@ const styles = StyleSheet.create({
   rowThree: {
     flexDirection: 'row',
   },
+  timestamp: {
+    fontSize: 16,
+    color: '#FFF',
+    bottom: 13,
+    left: 100,
+  },
 });
 
 const PostDetails = ({route, navigation}) => {
-  const {itemDesc, itemImg, itemPrice, itemName} = route.params;
+  const {itemCreation, itemDesc, itemImg, itemPrice, itemName, userid} =
+    route.params;
+  const [owner, setOwner] = React.useState('');
+  const [ownerImg, setOwnerImg] = React.useState(null);
+
+  const res = itemCreation.toDate().toISOString();
+  const ans = res.slice(0, res.indexOf('T'));
+
+  React.useEffect(() => {
+    firestore()
+      .collection('Users')
+      .doc(userid)
+      .get()
+      .then(d => {
+        console.log('User details username ', d.data().username);
+        setOwnerImg(d.data().profileImg);
+        setOwner(d.data().username);
+      })
+      .catch(e => console.log(e));
+  }, [ans, userid]);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={{
-          //  uri: 'https://images.pexels.com/photos/10450623/pexels-photo-10450623.jpeg',
-          uri: itemImg,
-        }}
-        // style={{width: '100%', height: 350}}
-        style={{width: 550, height: '58%', bottom: '13%'}}
-      />
-      <View style={styles.imageOverlay}>
-        <Text style={styles.label}>{itemName}</Text>
+      <View
+        style={{
+          backgroundColor: '#000',
+          opacity: 0.4,
+          width: 45,
+          height: 45,
+          borderRadius: 23,
+          position: 'absolute',
+          right: 24,
+          zIndex: 7,
+        }}>
         <Ionicons
           onPress={() => navigation.goBack()}
           name="arrow-back"
@@ -80,10 +110,21 @@ const PostDetails = ({route, navigation}) => {
           style={styles.arrow}
         />
       </View>
+      <Image
+        source={{
+          uri: itemImg,
+        }}
+        style={{width: 550, height: '62%', bottom: '16%'}}
+      />
+      <View style={styles.imageOverlay}>
+        <Text style={styles.label}>{itemName}</Text>
+        <Text style={styles.timestamp}>Posted on {ans}</Text>
+      </View>
       <View style={styles.rowOne}>
         <Image
           source={{
-            uri: 'https://images.pexels.com/photos/10450623/pexels-photo-10450623.jpeg',
+            // uri: 'https://images.pexels.com/photos/10450623/pexels-photo-10450623.jpeg',
+            uri: ownerImg,
           }}
           style={{
             width: 30,
@@ -93,7 +134,7 @@ const PostDetails = ({route, navigation}) => {
             bottom: 6,
           }}
         />
-        <Text style={{marginRight: '10%', fontSize: 16}}>owner@mail.com</Text>
+        <Text style={{marginRight: '10%', fontSize: 16}}>{owner}</Text>
         <Text
           style={{
             marginLeft: '6%',
@@ -109,18 +150,14 @@ const PostDetails = ({route, navigation}) => {
       </View>
       <View style={styles.rowTwo}>
         <Text style={{fontSize: 18}}>{itemDesc}</Text>
-        {/* <Text style={{fontSize: 18}}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio
-          praesentium nemo repudiandae dolorem voluptatum sed ratione, expedita
-          pariatur reprehenderit a. Tenetur quidem sit repellendus reiciendis
-          ducimus perferendis dolor accusamus dignissimos.
-        </Text> */}
       </View>
       <View style={styles.rowThree}>
         <Pressable onPress={() => null} style={styles.pressable}>
           <Text style={{fontWeight: 'bold', fontSize: 18}}>bid</Text>
         </Pressable>
-        <Pressable onPress={() => null} style={styles.pressable}>
+        <Pressable
+          onPress={() => navigation.navigate('Chat')}
+          style={styles.pressable}>
           <Text style={{fontWeight: 'bold', fontSize: 18}}>negotiate</Text>
         </Pressable>
       </View>

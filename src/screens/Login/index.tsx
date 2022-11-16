@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   View,
 } from 'react-native';
 import React, {useContext, useState} from 'react';
@@ -75,15 +76,19 @@ const LoginScreen = ({navigation}) => {
   const [email, setEmail] = React.useState('');
   const isDisabled = loginDisabled || email.length < 1;
 
-  const storeEmail = async (value: string) => {
-    try {
-      await AsyncStorage.setItem('@email_Key', value);
-    } catch (error) {
-      console.log('====================================');
-      console.log(error);
-      console.log('====================================');
-    }
+  const showToast = (msg: string) => {
+    ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.BOTTOM);
   };
+
+  // const storeEmail = async (value: string) => {
+  //   try {
+  //     await AsyncStorage.setItem('@email_Key', value);
+  //   } catch (error) {
+  //     console.log('====================================');
+  //     console.log(error);
+  //     console.log('====================================');
+  //   }
+  // };
 
   const handleSubmitPress = async () => {
     if (!email) {
@@ -97,22 +102,27 @@ const LoginScreen = ({navigation}) => {
     try {
       await auth().signInWithEmailAndPassword(email, pass);
       setAuthed(true);
-      storeEmail(email);
+      // storeEmail(email);
     } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        showToast('User does not exist.');
+      } else if (error.code === 'auth/invalid-email') {
+        showToast('Check the email again');
+      }
       console.log('HandleSub====================================');
       console.log(error);
       console.log('====================================');
     }
   };
 
-  const signIn = () => {
-    if (pass.length > 5) {
-      setAuthed(true);
-      storeEmail(email);
-    } else {
-      Alert.alert('Warning', 'Secret must be more than 5 xters');
-    }
-  };
+  // const signIn = () => {
+  //   if (pass.length > 5) {
+  //     setAuthed(true);
+  //     storeEmail(email);
+  //   } else {
+  //     Alert.alert('Warning', 'Secret must be more than 5 xters');
+  //   }
+  // };
   return (
     <View style={styles.container}>
       <Text style={styles.txt}>Welcome to</Text>

@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from 'react-native';
 import {
@@ -23,6 +24,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   avatar: {
@@ -73,14 +75,17 @@ const styles = StyleSheet.create({
 });
 
 function ProfileScreen({navigation}) {
-  const [text, setText] = useState('');
-  const [user, setUser] = useState('');
+  const [text, setText] = useState('username');
+  const [user, setUser] = useState<string | null | undefined>(text);
   // const [userEmail, setUserEmail] = useState('fineboi@work.com');
-  const [userEmail, setUserEmail] = useState('');
+  const [userEmail, setUserEmail] = useState<string | null | undefined>('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [imagePath, setImagePath] = useState('');
+  const [imagePath, setImagePath] = useState<string | undefined>('');
 
   const {setAuthed} = useContext(AppContext);
+  const showToast = (msg: string) => {
+    ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.BOTTOM);
+  };
 
   const storeAvatar = async (value: string) => {
     try {
@@ -90,6 +95,12 @@ function ProfileScreen({navigation}) {
       console.log(error);
       console.log('====================================');
     }
+  };
+  const setProfileImg = async (value: string | undefined) => {
+    await firestore().collection('Users').doc(auth().currentUser?.uid).update({
+      profileImg: value,
+    });
+    // storeAvatar(value ?? '');
   };
 
   const captureImage = async (type: MediaType) => {
@@ -122,7 +133,8 @@ function ProfileScreen({navigation}) {
       }
       response.assets?.map(m => {
         console.log(`${m.uri}`);
-        setImagePath(m.uri);
+        setImagePath(m?.uri);
+        setProfileImg(m?.uri);
         // console.log(`${m.fileName}`);
         // console.log(`${m.base64}`);
       });
@@ -153,8 +165,9 @@ function ProfileScreen({navigation}) {
       }
       response.assets?.map(m => {
         console.log(`${m.uri}`);
-        setImagePath(m.uri);
-        storeAvatar(m?.uri);
+        setImagePath(m?.uri);
+        setProfileImg(m?.uri);
+        // storeAvatar(m?.uri);
         // console.log(`${m.fileName}`);
         // console.log(`${m.base64}`);
       });
@@ -162,7 +175,7 @@ function ProfileScreen({navigation}) {
   };
 
   const createThreeButtonAlert = () =>
-    Alert.alert('Alert Title', 'My Alert Msg', [
+    Alert.alert('Image selector', 'How do you wish to proceed?', [
       {
         text: 'Cancel',
         onPress: () => console.log('Cancel Pressed'),
@@ -193,11 +206,11 @@ function ProfileScreen({navigation}) {
   const getAvatar = async () => {
     try {
       const value1 = await AsyncStorage.getItem('@avatar_Key');
-      if (value1 !== '') {
-        setImagePath(value1);
+      if (value1 !== '' || value1 !== null) {
+        setImagePath(value1 ?? '');
       }
       const value2 = await AsyncStorage.getItem('@username_Key');
-      if (value2 !== '') {
+      if (value2 !== '' || value2 !== null) {
         setUser(value2);
       }
     } catch (error) {
@@ -206,46 +219,72 @@ function ProfileScreen({navigation}) {
       console.log('====================================');
     }
   };
-  const localUpdateUsername = async (newUsername: string) => {
-    try {
-      setUser(newUsername);
-      await AsyncStorage.setItem('@username_Key', newUsername);
-    } catch (error) {
-      console.log('Avatar get err====================================');
-      console.log(error);
-      console.log('====================================');
-    }
+  // const localStoreUsernameAndAvatar = async (
+  //   theUsername: string,
+  //   avatar: string,
+  // ) => {
+  //   try {
+  //     await AsyncStorage.removeItem('@username_Key');
+  //     await AsyncStorage.removeItem('@avatar_Key');
+  //     await AsyncStorage.setItem('@username_Key', theUsername);
+  //     await AsyncStorage.setItem('@avatar_Key', avatar);
+  //   } catch (error) {
+  //     console.log(
+  //       'Avatar/username asyncstorage err====================================',
+  //     );
+  //     console.log(error);
+  //     console.log('====================================');
+  //   }
+  // };
+  const getUserDetails = async () => {
+    await firestore()
+      .collection('Users')
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(item => {
+          setUserEmail(item.data().usermail);
+          setUser(item.data().username);
+          setImagePath(item.data().profileImg);
+          //  localStoreUsernameAndAvatar(user ?? '', imagePath ?? '');
+        });
+      });
   };
 
-  const checkTextInput = value => {
+  useEffect(() => {
+    try {
+      const unsubscribe = navigation.addListener('focus', () => {
+        getUserDetails();
+      });
+      return unsubscribe;
+    } catch (error) {
+      console.log(error);
+    }
+    // getAvatar();
+  }, [navigation]);
+
+  const updateStoreUsername = value => {
     if (!text.trim()) {
       Alert.alert('Notice', 'We changed nothing, because you typed nothing!');
       return;
     } else {
       // setUser(value);
-      localUpdateUsername(value);
-      auth().currentUser?.updateProfile({
-        displayName: user,
-      });
+      // localUpdateUsername(value);
+      firestore()
+        .collection('Users')
+        .doc(auth().currentUser?.uid)
+        .update({
+          username: value,
+        })
+        .then(() => {
+          navigation.navigate('Home');
+          showToast('Username updated!');
+        })
+        .catch(e => console.log('Username update err: ', e));
+      // auth().currentUser?.updateProfile({
+      //   displayName: user,
+      // });
     }
   };
-
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-  useEffect(() => {
-    // getData();
-    const subscriber = auth().onAuthStateChanged(user => {
-      console.log('User ', JSON.stringify(user?.displayName));
-      setUserEmail(user?.email);
-      // setUser(user?.displayName);
-    });
-    return subscriber;
-  }, []);
-
-  useEffect(() => {
-    getAvatar();
-  }, []);
 
   const logOut = () => {
     setAuthed(false);
@@ -333,7 +372,7 @@ function ProfileScreen({navigation}) {
             onClose={() => setModalVisible(!modalVisible)}
             onChangeText={u => setText(u)}
             onSave={() => {
-              checkTextInput(text);
+              updateStoreUsername(text);
               console.log('Text ', text);
               setModalVisible(!modalVisible);
             }}

@@ -1,9 +1,10 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {AppContext} from '../../redux/contexts';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+//import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
+//import firestore from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   appName: {
@@ -23,14 +24,13 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: 'white',
     flexDirection: 'row',
-    // justifyContent: 'space-evenly',
     paddingTop: 8,
     paddingLeft: 12,
     paddingRight: 8,
   },
   logoutIcon: {
-    bottom: 4,
-    right: 4,
+    bottom: 8,
+    right: 6,
   },
   userLabel: {
     paddingVertical: 8,
@@ -40,74 +40,49 @@ const styles = StyleSheet.create({
   },
 });
 
-const CustomHeaderComponent = () => {
+const CustomHeaderComponent = ({cUser, cAvatar}) => {
   // const userName = 'fineboi@work.com';
   const {setAuthed} = useContext(AppContext);
-  const [img, setImg] = useState('');
+  // const [img, setImg] = useState(cAvatar);
+  // const [user, setUser] = useState<string | null | undefined>(cUser);
 
   const signOut = () => {
     setAuthed(false);
     auth().signOut();
   };
-  const [email, setEmail] = useState('');
-  const [user, setUser] = useState('');
-  // const getData = async () => {
-  //   try {
-  //     const value = await AsyncStorage.getItem('@email_Key');
-  //     if (value !== null) {
-  //       setEmail(value);
-  //     }
-  //   } catch (error) {
-  //     console.log('Header====================================');
-  //     console.log(error);
-  //     console.log('====================================');
-  //   }
-  // };
-
-  useEffect(() => {
-    // getData();
-    const subscriber = auth().onAuthStateChanged(user => {
-      console.log('User ', JSON.stringify(user?.displayName));
-      setEmail(user?.email);
-      setUser(user?.displayName);
-    });
-    return subscriber;
-  }, []);
-
-  const getAvatar = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@avatar_Key');
-      if (value !== '') {
-        setImg(value);
-      } else {
-        setImg('https://images.pexels.com/photos/36675/pexels-photo.jpg');
-      }
-    } catch (error) {
-      console.log('Avatar get err====================================');
-      console.log(error);
-      console.log('====================================');
-    }
-  };
-
-  useEffect(() => {
-    getAvatar();
-  }, []);
 
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.appName}>floggit</Text>
       <View style={styles.endItems}>
-        <Text style={styles.userLabel}>{email}</Text>
-        <Image
-          source={{uri: img}}
-          style={{
-            marginRight: 16,
-            bottom: 6,
-            width: 30,
-            height: 30,
-            borderRadius: 15,
-          }}
-        />
+        {cUser ? (
+          <Text style={styles.userLabel}>Hi, {cUser}</Text>
+        ) : (
+          <Text style={styles.userLabel}>Username Here</Text>
+        )}
+        {cAvatar ? (
+          <Image
+            source={{uri: cAvatar}}
+            style={{
+              marginRight: 18,
+              bottom: 6,
+              width: 30,
+              height: 30,
+              borderRadius: 15,
+            }}
+          />
+        ) : (
+          <View
+            style={{
+              marginRight: 16,
+              bottom: 6,
+              width: 30,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: 'gray',
+            }}
+          />
+        )}
         <Ionicons
           name="log-out"
           size={24}

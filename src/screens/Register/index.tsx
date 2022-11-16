@@ -12,6 +12,7 @@ import React, {useContext, useState} from 'react';
 import {AppContext} from '../../redux/contexts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   appName: {
@@ -101,8 +102,8 @@ const SignUpScreen = ({navigation}) => {
       showToast('Email NOT set!');
       // Alert.alert('Warning', 'Enter email');
       return;
-    } else if (!pass || pass.length < 6) {
-      showToast('Password must be > 5 xters!');
+    } else if (!pass || pass.length < 8) {
+      showToast('Password must be at least 8 xters!');
       // Alert.alert('Warning', 'Enter password greater than 5 xters');
       return;
     } else if (pass !== confirmPass) {
@@ -110,24 +111,63 @@ const SignUpScreen = ({navigation}) => {
       // Alert.alert('Warning', 'Enter password greater than 5 xters');
       return;
     }
+    // try {
+    //   const regedUser = await auth().createUserWithEmailAndPassword(
+    //     email,
+    //     pass,
+    //   );
+    //   if (regedUser) {
+    //     setAuthed(true);
+    //     storeEmail(email);
+    //     auth().currentUser?.updateProfile({
+    //       displayName: username,
+    //     });
+    //   }
+    // }
     try {
       const regedUser = await auth().createUserWithEmailAndPassword(
         email,
         pass,
       );
-      if (regedUser) {
-        setAuthed(true);
-        storeEmail(email);
-        auth().currentUser?.updateProfile({
-          displayName: username,
-        });
-      }
+      return await firestore()
+        .collection('Users')
+        .doc(regedUser.user.uid)
+        .set({
+          username: username,
+          usermail: email,
+          history: [],
+          chats: [],
+          profileImg: '',
+        })
+        .then(() => {
+          setAuthed(true);
+          storeEmail(email);
+          setPass('');
+          setConfirmPass('');
+          setEmail('');
+          setUserName('');
+        })
+        .catch(e => console.log(e));
+      // if (regedUser) {
+      //   setAuthed(true);
+      //   storeEmail(email);
+      //   auth().currentUser?.updateProfile({
+      //     displayName: username,
+      //   });
+      // }
     } catch (error) {
       console.log('SignUp submit====================================');
       console.log(error);
       console.log('====================================');
       if (error.code === 'auth/email-already-in-use') {
-        Alert.alert('Error', 'This email is already used');
+        // Alert.alert('Error', 'This email is already used');
+        showToast('email-already-in-use');
+      } else if (error.code === 'auth/invalid-email') {
+        // Alert.alert('Error', 'This email is already used');
+        showToast('Enter a real email address!');
+      } else if (error.code === 'auth/weak-password') {
+        // Alert.alert('Error', 'This email is already used');
+        showToast('Enter at least 8 xters, mix of symbols & alphanumerics.');
       }
     }
   };
@@ -153,7 +193,7 @@ const SignUpScreen = ({navigation}) => {
           setLoginDisabled(false);
         }}
         onChangeText={newText => setUserName(newText)}
-        placeholder="username"
+        placeholder="your username"
         style={styles.inputFld}
       />
       <TextInput
@@ -161,7 +201,7 @@ const SignUpScreen = ({navigation}) => {
           setLoginDisabled(false);
         }}
         onChangeText={newText => setEmail(newText)}
-        placeholder="you@email.address"
+        placeholder="your email address"
         autoCapitalize="none"
         keyboardType="email-address"
         autoCorrect={false}
@@ -172,7 +212,7 @@ const SignUpScreen = ({navigation}) => {
           setLoginDisabled(false);
         }}
         onChangeText={newPass => setPass(newPass)}
-        placeholder="password"
+        placeholder="your password"
         secureTextEntry={true}
         style={styles.inputFld}
       />

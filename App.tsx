@@ -129,6 +129,7 @@ import {Provider} from 'react-redux';
 import {store} from './src/redux/store';
 import auth from '@react-native-firebase/auth';
 import PostDetails from './src/screens/PostDetails';
+import ChatScreen from './src/screens/Chat';
 
 const Tab = createBottomTabNavigator();
 // const HomeStack = createNativeStackNavigator();
@@ -317,6 +318,11 @@ export default function App() {
               options={{headerShown: true, title: 'History'}}
               name="Uploads"
               component={UploadScreen}
+            />
+            <Stack.Screen
+              options={{headerShown: true, title: 'Chat'}}
+              name="Chat"
+              component={ChatScreen}
             />
             <Stack.Screen
               options={{headerShown: false}}

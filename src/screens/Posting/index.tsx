@@ -14,8 +14,7 @@ import {
   View,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-//import {v4 as uuidv4} from 'uuid';
-//import firebase from '@react-native-firebase/app';
+
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -48,8 +47,13 @@ type ImagePickerResponse = {
   uri?: string;
   fileName?: string;
 };
+type History = {
+  title: string;
+  price: string;
+  image: string;
+};
 
-function PostingScreen() {
+function PostingScreen({navigation}) {
   // const [filePath, setFilePath] = useState({});
   const [imagePath, setImagePath] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -176,7 +180,7 @@ function PostingScreen() {
   };
 
   const createThreeButtonAlert = () =>
-    Alert.alert('Alert Title', 'My Alert Msg', [
+    Alert.alert('Image selector', 'How do you want to proceed?', [
       {
         text: 'Cancel',
         onPress: () => console.log('Cancel Pressed'),
@@ -195,67 +199,23 @@ function PostingScreen() {
   const isFocused = useIsFocused();
   isFocused && imagePath === '' ? createThreeButtonAlert() : null;
 
-  // const uploadPost = async () => {
-  //   const filename = imagePath.substring(imagePath.lastIndexOf('-') + 1);
-  //   const uploadUri =
-  //     Platform.OS === 'ios' ? imagePath.replace('file://', '') : imagePath;
-  //   //const id = uuidv4();
-
-  //   setUploading(true);
-  //   setTransferred(0);
-
-  //   const task = storage().ref(`images/${filename}`).putFile(uploadUri);
-
-  //   task.on('state_changed', snapshot => {
-  //     setTransferred(
-  //       Math.round((snapshot.bytesTransferred * 100) / snapshot.totalBytes),
-  //     );
-  //   });
-
-  //   try {
-  //     await task;
-  //   } catch (error) {
-  //     console.log('Task err====================================');
-  //     console.log(error);
-  //     console.log('====================================');
-  //   }
-  //   setUploading(false);
-  //   Platform.OS === 'android'
-  //     ? showToast('Image has been uploaded!')
-  //     : Alert.alert('Success!', 'Image has been uploaded!');
-  //   // Alert.alert('Success!', 'Image has been uploaded!');
-  //   setImagePath('');
-  // };
-
   const uploadPost = async () => {
     const filename = imagePath.substring(imagePath.lastIndexOf('-') + 1);
     const uploadUri =
       Platform.OS === 'ios' ? imagePath.replace('file://', '') : imagePath;
-    //const id = uuidv4();
-
-    // const extension = filename.split('.').pop();
-    // const namee = filename.split('.').slice(0, -1).join('.');
-    // const formatFile = namee + Date.now() + '.' + extension;
 
     setUploading(true);
     setTransferred(0);
 
-    // const task = storage()
-    //   .ref(`images/leveltwos/${filename}`)
-    //   .putFile(uploadUri);
     const storageRef = storage().ref(
       `photos/${postCategory.toLowerCase()}/${filename}`,
     );
     const task = storageRef.putFile(uploadUri);
-    // const task = storage()
-    //   .ref(`photos/${postCategory.toLowerCase()}/${filename}`)
-    //   .putFile(uploadUri);
 
     task.on('state_changed', taskSnapshot => {
       setTransferred(
         Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
           100,
-        //  Math.round((snapshot.bytesTransferred * 100) / snapshot.totalBytes),
       );
     });
 
@@ -266,15 +226,13 @@ function PostingScreen() {
       console.log(postPrice);
       console.log(postDesc);
       console.log('====================================');
-      // console.log('Format ', formatFile);
       await task;
       const url = await storageRef.getDownloadURL();
       setUploading(false);
       Platform.OS === 'android'
         ? showToast('Image has been uploaded!')
         : Alert.alert('Success!', 'Image has been uploaded!');
-      // Alert.alert('Success!', 'Image has been uploaded!');
-      setImagePath('');
+
       return url;
     } catch (error) {
       console.log('Task err====================================');
@@ -286,9 +244,21 @@ function PostingScreen() {
 
   const cUser = auth().currentUser;
 
+  const updatePostHistory = async img => {
+    const result = {} as History;
+    result.title = postTitle;
+    result.price = postPrice;
+    result.image = img;
+    let theRef = firestore().collection('Users').doc(cUser?.uid);
+    await theRef.update({
+      history: firestore.FieldValue.arrayUnion(result),
+    });
+  };
+
   const submitPost = async () => {
     if (postTitle && postPrice && postCategory && postDesc) {
       const imgUrl = await uploadPost();
+      updatePostHistory(imgUrl);
       firestore()
         .collection('Posts')
         .add({
@@ -301,11 +271,12 @@ function PostingScreen() {
           imageurl: imgUrl,
         })
         .then(() => {
+          navigation.navigate('Home');
+          setImagePath('');
           setPostCategory('');
           setPostTitle('');
           setPostPrice('');
           setPostDesc('');
-          // showToast('Post submitted..');
         })
         .catch(e => console.log('Submit err ', e));
     } else {
@@ -379,7 +350,7 @@ function PostingScreen() {
                 onPress={() => setImagePath('')}
               />
               {uploading ? (
-                <View style={styles.progress}>
+                <View>
                   <Text style={{fontSize: 25, fontWeight: 'bold'}}>
                     {transferred}%
                   </Text>
