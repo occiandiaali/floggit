@@ -10,6 +10,13 @@ const styles = StyleSheet.create({
     padding: 8,
     color: '#ABAAAA',
   },
+  bodyInfoM: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    padding: 8,
+    fontWeight: '700',
+    color: '#000',
+  },
   button: {
     backgroundColor: 'green',
     width: 80,
@@ -46,13 +53,13 @@ const ChatScreen = () => {
   return (
     <View style={styles.container}>
       {msg ? (
-        <Text onLongPress={() => setMsg('')} style={styles.bodyInfo}>
+        <Text onLongPress={() => setMsg('')} style={styles.bodyInfoM}>
           Message: {msg}
         </Text>
       ) : (
         <Text style={styles.bodyInfo}>
-          Go to the point. Negotiate as directly as possible. You have a 6
-          message limit.
+          Negotiate as directly as possible by making a counter-offer. You have
+          a 6 message limit.
         </Text>
       )}
       <CustomInput

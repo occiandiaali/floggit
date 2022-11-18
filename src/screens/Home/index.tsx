@@ -21,14 +21,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 30,
     borderRadius: 6,
-    backgroundColor: '#ABAAAA',
+    backgroundColor: '#000', //'#ABAAAA',
     opacity: 0.5,
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
     textAlignVertical: 'center',
     position: 'absolute',
-    bottom: 20,
+    // bottom: 18,
   },
   headingRow: {
     flexDirection: 'row',
@@ -98,6 +98,12 @@ const styles = StyleSheet.create({
     right: 16,
     top: 6,
   },
+  sliderPic: {
+    margin: 8,
+    width: 350,
+    height: 250,
+    borderRadius: 12,
+  },
   trash: {
     position: 'absolute',
 
@@ -111,33 +117,31 @@ const styles = StyleSheet.create({
   },
 });
 
-const placeholderUri = '../../assets/images/business.png';
-
 const promos = [
   {
     id: 1,
     label: 'ONE',
-    img: placeholderUri,
+    img: 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
   },
   {
     id: 2,
     label: 'TWO',
-    img: placeholderUri,
+    img: 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
   },
   {
     id: 3,
     label: 'THREE',
-    img: placeholderUri,
+    img: 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
   },
   {
     id: 4,
     label: 'FOUR',
-    img: placeholderUri,
+    img: 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
   },
   {
     id: 5,
     label: 'FIVE',
-    img: placeholderUri,
+    img: 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
   },
 ];
 
@@ -148,6 +152,7 @@ function HomeScreen({navigation}) {
       img: null,
       titular: '',
       price: '',
+      cando: false,
       desc: '',
       createdat: new Date(),
     },
@@ -158,6 +163,7 @@ function HomeScreen({navigation}) {
       img: null,
       titular: '',
       price: '',
+      cando: false,
       desc: '',
       createdat: new Date(),
     },
@@ -168,6 +174,7 @@ function HomeScreen({navigation}) {
       img: null,
       titular: '',
       price: '',
+      cando: false,
       desc: '',
       createdat: new Date(),
     },
@@ -187,9 +194,10 @@ function HomeScreen({navigation}) {
         const newData = querySnapshot.docs.map(doc => ({
           ...doc.data(),
           userid: doc.data().userid,
-          img: doc.data().imageurl ?? placeholderUri,
+          img: doc.data().imageurl,
           titular: doc.data().title,
           price: doc.data().price,
+          cando: doc.data().negotiable,
           desc: doc.data().description,
           createdat: doc.data().created,
         }));
@@ -208,9 +216,10 @@ function HomeScreen({navigation}) {
         const newData = querySnapshot.docs.map(doc => ({
           ...doc.data(),
           userid: doc.data().userid,
-          img: doc.data().imageurl ?? placeholderUri,
+          img: doc.data().imageurl,
           titular: doc.data().title,
           price: doc.data().price,
+          cando: doc.data().negotiable,
           desc: doc.data().description,
           createdat: doc.data().created,
         }));
@@ -229,9 +238,10 @@ function HomeScreen({navigation}) {
         const newData = querySnapshot.docs.map(doc => ({
           ...doc.data(),
           userid: doc.data().userid,
-          img: doc.data().imageurl ?? placeholderUri,
+          img: doc.data().imageurl,
           titular: doc.data().title,
           price: doc.data().price,
+          cando: doc.data().negotiable,
           desc: doc.data().description,
           createdat: doc.data().created,
         }));
@@ -282,8 +292,8 @@ function HomeScreen({navigation}) {
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 12,
-                backgroundColor: 'teal',
               }}>
+              <Image source={{uri: el.img}} style={styles.sliderPic} />
               <Text style={styles.carouselBoxLabel}>{el.label}</Text>
             </View>
           ))}
@@ -314,6 +324,7 @@ function HomeScreen({navigation}) {
                             itemImg: el.img,
                             itemName: el.titular,
                             itemPrice: el.price,
+                            itemNegotiable: el.cando,
                             itemDesc: el.desc,
                             itemCreation: el.createdat,
                           })
@@ -378,6 +389,7 @@ function HomeScreen({navigation}) {
                             itemImg: el.img,
                             itemName: el.titular,
                             itemPrice: el.price,
+                            itemNegotiable: el.cando,
                             itemDesc: el.desc,
                             itemCreation: el.createdat,
                           })
@@ -439,6 +451,7 @@ function HomeScreen({navigation}) {
                             itemImg: el.img,
                             itemName: el.titular,
                             itemPrice: el.price,
+                            itemNegotiable: el.cando,
                             itemDesc: el.desc,
                             itemCreation: el.createdat,
                           })
@@ -471,7 +484,6 @@ function HomeScreen({navigation}) {
                       borderRadius: 12,
                       borderColor: 'pink',
                       borderWidth: 1.5,
-                      // backgroundColor: 'teal',
                     }}>
                     <Text>{el.label}</Text>
                   </View>

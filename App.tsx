@@ -130,6 +130,7 @@ import {store} from './src/redux/store';
 import auth from '@react-native-firebase/auth';
 import PostDetails from './src/screens/PostDetails';
 import ChatScreen from './src/screens/Chat';
+import ChatHistory from './src/screens/Profile/chatHistory';
 
 const Tab = createBottomTabNavigator();
 // const HomeStack = createNativeStackNavigator();
@@ -328,6 +329,11 @@ export default function App() {
               options={{headerShown: false}}
               name="PostDetails"
               component={PostDetails}
+            />
+            <Stack.Screen
+              options={{headerShown: true, title: 'Archives'}}
+              name="Archives"
+              component={ChatHistory}
             />
           </Stack.Navigator>
         ) : (

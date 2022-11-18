@@ -342,7 +342,11 @@ function ProfileScreen({navigation}) {
           />
         </View> */}
         <View style={styles.bioLine}>
-          <Text style={styles.labels}>history</Text>
+          <Text
+            style={styles.labels}
+            onPress={() => navigation.navigate('Uploads')}>
+            uploads history
+          </Text>
           <Ionicon
             name="images"
             size={24}
@@ -351,13 +355,21 @@ function ProfileScreen({navigation}) {
         </View>
 
         <View style={styles.bioLine}>
-          <Text style={styles.labels}>chats</Text>
-          <Ionicon name="chatbox" size={24} onPress={() => null} />
+          <Text
+            style={styles.labels}
+            onPress={() => navigation.navigate('Archives')}>
+            archived chats
+          </Text>
+          <Ionicon
+            name="chatbox"
+            size={24}
+            onPress={() => navigation.navigate('Archives')}
+          />
         </View>
 
         <View style={[styles.bioLine, {paddingTop: 36}]}>
           <Text onPress={logOut} style={styles.labels}>
-            log out
+            Log out
           </Text>
           <Ionicon onPress={logOut} name="log-out" size={24} />
         </View>

@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   rowTwo: {
     flexDirection: 'row',
     padding: 6,
-    bottom: '10%',
+    bottom: '18%',
   },
   rowThree: {
     flexDirection: 'row',
@@ -69,8 +69,15 @@ const styles = StyleSheet.create({
 });
 
 const PostDetails = ({route, navigation}) => {
-  const {itemCreation, itemDesc, itemImg, itemPrice, itemName, userid} =
-    route.params;
+  const {
+    itemCreation,
+    itemDesc,
+    itemImg,
+    itemPrice,
+    itemName,
+    itemNegotiable,
+    userid,
+  } = route.params;
   const [owner, setOwner] = React.useState('');
   const [ownerImg, setOwnerImg] = React.useState(null);
 
@@ -153,13 +160,15 @@ const PostDetails = ({route, navigation}) => {
       </View>
       <View style={styles.rowThree}>
         <Pressable onPress={() => null} style={styles.pressable}>
-          <Text style={{fontWeight: 'bold', fontSize: 18}}>bid</Text>
+          <Text style={{fontWeight: 'bold', fontSize: 18}}>get it</Text>
         </Pressable>
-        <Pressable
-          onPress={() => navigation.navigate('Chat')}
-          style={styles.pressable}>
-          <Text style={{fontWeight: 'bold', fontSize: 18}}>negotiate</Text>
-        </Pressable>
+        {itemNegotiable === true ? (
+          <Pressable
+            onPress={() => navigation.navigate('Chat')}
+            style={styles.pressable}>
+            <Text style={{fontWeight: 'bold', fontSize: 18}}>negotiate</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );

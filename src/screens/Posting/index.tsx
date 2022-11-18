@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   ToastAndroid,
@@ -41,6 +42,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  priceRow: {
+    flexDirection: 'row',
+  },
 });
 
 type ImagePickerResponse = {
@@ -62,6 +66,13 @@ function PostingScreen({navigation}) {
   const [postTitle, setPostTitle] = useState('');
   const [postPrice, setPostPrice] = useState('');
   const [postDesc, setPostDesc] = useState('');
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const toggleSwitch = (value: boolean) => {
+    setIsEnabled(value);
+    console.log('Enabled? : ', !isEnabled);
+    showToast(`Enabled: ${!isEnabled}`);
+  };
 
   const showToast = (msg: string) => {
     ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.BOTTOM);
@@ -199,7 +210,7 @@ function PostingScreen({navigation}) {
   const isFocused = useIsFocused();
   isFocused && imagePath === '' ? createThreeButtonAlert() : null;
 
-  const uploadPost = async () => {
+  const uploadPhoto = async () => {
     const filename = imagePath.substring(imagePath.lastIndexOf('-') + 1);
     const uploadUri =
       Platform.OS === 'ios' ? imagePath.replace('file://', '') : imagePath;
@@ -220,12 +231,6 @@ function PostingScreen({navigation}) {
     });
 
     try {
-      console.log('Post details====================================');
-      console.log(postCategory);
-      console.log(postTitle);
-      console.log(postPrice);
-      console.log(postDesc);
-      console.log('====================================');
       await task;
       const url = await storageRef.getDownloadURL();
       setUploading(false);
@@ -257,7 +262,7 @@ function PostingScreen({navigation}) {
 
   const submitPost = async () => {
     if (postTitle && postPrice && postCategory && postDesc) {
-      const imgUrl = await uploadPost();
+      const imgUrl = await uploadPhoto();
       updatePostHistory(imgUrl);
       firestore()
         .collection('Posts')
@@ -266,6 +271,7 @@ function PostingScreen({navigation}) {
           category: postCategory,
           title: postTitle,
           price: postPrice,
+          negotiable: isEnabled,
           description: postDesc,
           created: firestore.Timestamp.fromDate(new Date()),
           imageurl: imgUrl,
@@ -276,6 +282,7 @@ function PostingScreen({navigation}) {
           setPostCategory('');
           setPostTitle('');
           setPostPrice('');
+          setIsEnabled(false);
           setPostDesc('');
         })
         .catch(e => console.log('Submit err ', e));
@@ -311,19 +318,40 @@ function PostingScreen({navigation}) {
                 paddingLeft: 12,
               }}
             />
-            <TextInput
-              onChangeText={price => setPostPrice(price)}
-              placeholder="Asking price"
-              textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
-              keyboardType="number-pad"
-              style={{
-                borderWidth: 1,
-                lineHeight: 8,
-                borderColor: 'grey',
-                marginTop: 12,
-                paddingLeft: 12,
-              }}
-            />
+            <View style={styles.priceRow}>
+              <TextInput
+                onChangeText={price => setPostPrice(price)}
+                placeholder="Asking price"
+                textAlignVertical={Platform.OS === 'android' ? 'top' : 'auto'}
+                keyboardType="number-pad"
+                style={{
+                  width: '60%',
+                  borderWidth: 1,
+                  lineHeight: 8,
+                  borderColor: 'grey',
+                  marginTop: 12,
+                  paddingLeft: 12,
+                }}
+              />
+              <View
+                style={{
+                  width: '40%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  top: 6,
+                }}>
+                <Switch
+                  trackColor={{false: '#767577', true: '#81b0ff'}}
+                  thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isEnabled}
+                />
+                <Text style={{paddingTop: 4, fontWeight: 'bold'}}>
+                  Price negotiable?
+                </Text>
+              </View>
+            </View>
             <TextInput
               multiline={true}
               numberOfLines={3}

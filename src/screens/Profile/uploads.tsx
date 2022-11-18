@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  FlatList,
   Image,
   StyleSheet,
   Text,
@@ -11,41 +12,45 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-import storage from '@react-native-firebase/storage';
+//import storage from '@react-native-firebase/storage';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 6,
   },
   item: {
-    width: 170,
-    height: 170,
+    width: 365, //170,
+    height: 240, //170,
     margin: 6,
+    borderRadius: 6,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     backgroundColor: 'teal',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   pic: {
-    width: 170,
-    height: 170,
+    width: 365, //170,
+    height: 240, //170,
+    borderRadius: 6,
     margin: 6,
   },
   price: {
     position: 'absolute',
-    bottom: 10,
-    left: 10,
+    bottom: 30, //10,
+    left: 30, //10,
     color: 'white',
   },
+  render_item: {
+    // flexDirection: 'row',
+  },
   title: {
+    fontSize: 18,
     position: 'absolute',
-    top: 10,
-    left: 10,
+    top: 90,
+    left: 100,
     color: 'white',
   },
   trash: {
@@ -95,32 +100,73 @@ const UploadScreen = ({navigation}) => {
       .catch(e => console.log(e));
   };
 
+  // return (
+  //   <View style={styles.container}>
+  //     {postHistory.length !== 0 ? (
+  //       postHistory.map((u, i) => (
+  //         <View style={styles.item} key={i}>
+  //           {loading ? (
+  //             <ActivityIndicator size={'large'} style={{alignSelf: 'center'}} />
+  //           ) : (
+  //             <>
+  //               <Image source={{uri: u.image}} style={styles.pic} />
+  //               <Text style={styles.title}>{u.title}</Text>
+  //               <Text style={styles.price}>{u.price}</Text>
+  //               <View style={styles.trash}>
+  //                 <Ionicons
+  //                   name="trash"
+  //                   size={20}
+  //                   color="red"
+  //                   onPress={() => removeHistoryItem(u)}
+  //                 />
+  //               </View>
+  //             </>
+  //           )}
+  //         </View>
+  //       ))
+  //     ) : (
+  //       <Text>No History</Text>
+  //     )}
+  //   </View>
+  // );
+
+  const renderItem = ({item}) => (
+    <View key={item.id}>
+      <Image source={{uri: item.image}} style={styles.pic} />
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.price}>{item.price}</Text>
+      <View style={styles.trash}>
+        <Ionicons
+          name="trash"
+          size={20}
+          color="red"
+          style={styles.trash}
+          onPress={() => removeHistoryItem(item)}
+        />
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      {postHistory.length !== 0 ? (
-        postHistory.map((u, i) => (
-          <View style={styles.item} key={i}>
-            {loading ? (
-              <ActivityIndicator size={'large'} style={{alignSelf: 'center'}} />
-            ) : (
-              <>
-                <Image source={{uri: u.image}} style={styles.pic} />
-                <Text style={styles.title}>{u.title}</Text>
-                <Text style={styles.price}>{u.price}</Text>
-                <View style={styles.trash}>
-                  <Ionicons
-                    name="trash"
-                    size={20}
-                    color="red"
-                    onPress={() => removeHistoryItem(u)}
-                  />
-                </View>
-              </>
-            )}
-          </View>
-        ))
+      {loading ? (
+        <ActivityIndicator size={'large'} style={{alignSelf: 'center'}} />
       ) : (
-        <Text>No History</Text>
+        <>
+          <View style={{margin: 8}}>
+            <Text style={{fontSize: 18, color: '#ABAAAA'}}>
+              Items ({postHistory.length})
+            </Text>
+          </View>
+
+          <FlatList
+            data={postHistory}
+            extraData={postHistory}
+            showsVerticalScrollIndicator={false}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </>
       )}
     </View>
   );
