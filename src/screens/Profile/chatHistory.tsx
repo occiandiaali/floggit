@@ -1,5 +1,15 @@
-import {FlatList, Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React from 'react';
+
+import {useGetAllProductsQuery, useGetProductQuery} from '../../redux/apiSlice';
 
 const styles = StyleSheet.create({
   avatar: {
@@ -10,6 +20,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 22,
+    paddingLeft: 12,
     backgroundColor: '#FFF',
   },
   hintText: {
@@ -59,10 +70,37 @@ const Item = ({img, hint}) => (
 );
 
 const ChatHistory = () => {
-  const renderItem = ({item}) => <Item img={item.img} hint={item.hint} />;
+  const [info, setInfo] = React.useState([]);
+  const {
+    data: allProductsData,
+    error,
+    isError,
+    isLoading,
+    refetch,
+  } = useGetAllProductsQuery();
+  // const {data: singleProductData} = useGetProductQuery('iphone');
+  React.useEffect(() => {
+    if (allProductsData) {
+      console.log('Products query: ', allProductsData);
+      refetch();
+      setInfo(allProductsData.products);
+    }
+  }, [allProductsData, refetch]);
+  // const renderItem = ({item}) => <Item img={item.img} hint={item.hint} />;
+  const renderItem = ({item}) => (
+    <Item img={item.thumbnail} hint={item.title} />
+  );
   return (
     <View style={styles.container}>
-      <FlatList data={DATA} renderItem={renderItem} />
+      {isLoading ? (
+        <ActivityIndicator size={'large'} />
+      ) : (
+        <FlatList
+          data={info}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      )}
     </View>
   );
 };

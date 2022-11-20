@@ -102,7 +102,7 @@ const PostDetails = ({route, navigation}) => {
       <View
         style={{
           backgroundColor: '#000',
-          opacity: 0.4,
+          opacity: 0.5,
           width: 45,
           height: 45,
           borderRadius: 23,

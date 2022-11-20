@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -52,6 +53,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
   },
+  loginTxtLoadingTxt: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  loginTxtLoadingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'pink',
+    padding: 8,
+    width: '60%',
+    height: 50,
+    top: 8,
+    borderRadius: 25,
+  },
   newuser: {
     paddingRight: 8,
   },
@@ -73,6 +91,7 @@ const LoginScreen = ({navigation}) => {
   const [text, setText] = useState('');
   const [pass, setPass] = useState('');
   const {setAuthed} = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = React.useState('');
   const isDisabled = loginDisabled || email.length < 1;
 
@@ -100,9 +119,11 @@ const LoginScreen = ({navigation}) => {
       return;
     }
     try {
+      setLoading(true);
       await auth().signInWithEmailAndPassword(email, pass);
       setAuthed(true);
       // storeEmail(email);
+      setLoading(false);
     } catch (error) {
       if (error.code === 'auth/user-not-found') {
         showToast('User does not exist.');
@@ -152,12 +173,21 @@ const LoginScreen = ({navigation}) => {
         secureTextEntry={true}
         style={styles.inputFld}
       />
-      <Text
-        disabled={isDisabled}
-        onPress={handleSubmitPress}
-        style={styles.loginTxt}>
-        Sign In
-      </Text>
+
+      {loading ? (
+        <View style={styles.loginTxtLoadingContainer}>
+          <ActivityIndicator size={'small'} style={{right: 6}} />
+          <Text style={styles.loginTxtLoadingTxt}>Sign in</Text>
+        </View>
+      ) : (
+        <Text
+          disabled={isDisabled}
+          onPress={handleSubmitPress}
+          style={styles.loginTxt}>
+          Sign in
+        </Text>
+      )}
+
       <View style={styles.register}>
         <Text style={styles.newuser}>New user?</Text>
         <Pressable onPress={() => navigation.navigate('signup')}>
