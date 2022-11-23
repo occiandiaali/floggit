@@ -1,5 +1,11 @@
 # qorner-app
 React Native-Firebase peer2peer trading MVP 
+
+## Android demo  
+
+https://user-images.githubusercontent.com/40769994/203616652-ff19c659-ebe8-4c50-88f8-d365695bf888.mp4
+
+
 ## Screen shots 
 ![qrnr-signin](https://user-images.githubusercontent.com/40769994/198758401-96b2485f-61dc-4b33-9ebe-9ccdfd6d0d9e.png)
 ![qrnr-signup](https://user-images.githubusercontent.com/40769994/198758411-7a39b6dc-e555-42ac-b57b-ca1948f28e8e.png) 
