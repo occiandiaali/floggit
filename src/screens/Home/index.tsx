@@ -145,35 +145,45 @@ const promos = [
   },
 ];
 
+interface CategoryProps {
+  userid: string;
+  img: string;
+  titular: string;
+  price: number;
+  cando: boolean;
+  desc: string;
+  createdat: Date;
+}
+
 function HomeScreen({navigation}) {
-  const [electronics, setElectronics] = useState<Object[]>([
+  const [electronics, setElectronics] = useState<CategoryProps[]>([
     {
       userid: '',
-      img: null,
+      img: 'https://images.pexels.com/photos/4386158/pexels-photo-4386158.jpeg',
       titular: '',
-      price: '',
+      price: 0,
       cando: false,
       desc: '',
       createdat: new Date(),
     },
   ]);
-  const [household, setHousehold] = useState<Object[]>([
+  const [household, setHousehold] = useState<CategoryProps[]>([
     {
       userid: '',
-      img: null,
+      img: 'https://images.pexels.com/photos/4386158/pexels-photo-4386158.jpeg',
       titular: '',
-      price: '',
+      price: 0,
       cando: false,
       desc: '',
       createdat: new Date(),
     },
   ]);
-  const [automobiles, setAutomobiles] = useState<Object[]>([
+  const [automobiles, setAutomobiles] = useState<CategoryProps[]>([
     {
       userid: '',
-      img: null,
+      img: 'https://images.pexels.com/photos/4386158/pexels-photo-4386158.jpeg',
       titular: '',
-      price: '',
+      price: 0,
       cando: false,
       desc: '',
       createdat: new Date(),
@@ -192,7 +202,6 @@ function HomeScreen({navigation}) {
       .get()
       .then(querySnapshot => {
         const newData = querySnapshot.docs.map(doc => ({
-          ...doc.data(),
           userid: doc.data().userid,
           img: doc.data().imageurl,
           titular: doc.data().title,
@@ -200,6 +209,7 @@ function HomeScreen({navigation}) {
           cando: doc.data().negotiable,
           desc: doc.data().description,
           createdat: doc.data().created,
+          ...doc.data(),
         }));
         setElectronics(newData);
         setLoading(false);
@@ -330,9 +340,6 @@ function HomeScreen({navigation}) {
                           })
                         }>
                         <Image source={{uri: el.img}} style={styles.pic} />
-                        {/* <View style={styles.picPriceV}>
-                          <Text style={styles.picPrice}>₦{el.price}</Text>
-                        </View> */}
                         <View style={styles.picPriceV}>
                           <Text style={styles.picPrice}>
                             {new Intl.NumberFormat('ng-NG', {

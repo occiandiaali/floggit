@@ -79,7 +79,9 @@ const PostDetails = ({route, navigation}) => {
     userid,
   } = route.params;
   const [owner, setOwner] = React.useState('');
-  const [ownerImg, setOwnerImg] = React.useState(null);
+  const [ownerImg, setOwnerImg] = React.useState(
+    'https://images.pexels.com/photos/4386158/pexels-photo-4386158.jpeg',
+  );
 
   const res = itemCreation.toDate().toISOString();
   const ans = res.slice(0, res.indexOf('T'));
@@ -90,9 +92,9 @@ const PostDetails = ({route, navigation}) => {
       .doc(userid)
       .get()
       .then(d => {
-        console.log('User details username ', d.data().username);
-        setOwnerImg(d.data().profileImg);
-        setOwner(d.data().username);
+        console.log('User details username ', d.data()?.username);
+        setOwnerImg(d.data()?.profileImg);
+        setOwner(d.data()?.username);
       })
       .catch(e => console.log(e));
   }, [ans, userid]);
@@ -156,7 +158,7 @@ const PostDetails = ({route, navigation}) => {
         </Text>
       </View>
       <View style={styles.rowTwo}>
-        <Text style={{fontSize: 18}}>{itemDesc}</Text>
+        <Text style={{fontSize: 18, padding: 6}}>{itemDesc}</Text>
       </View>
       <View style={styles.rowThree}>
         <Pressable onPress={() => null} style={styles.pressable}>
